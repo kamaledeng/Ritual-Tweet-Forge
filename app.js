@@ -66,7 +66,14 @@ const quickAngles = [
   "Make it sound useful for builders",
   "Make it feel exciting for community members",
   "Focus on testnet activity",
-  "Ask a thoughtful question"
+  "Ask a thoughtful question",
+  "Talk about autonomous agents",
+  "Make it sound like a casual observation",
+  "Focus on why Ritual is different",
+  "Make it useful for people trying the testnet",
+  "Explain it without technical jargon",
+  "Sound like a builder sharing a note",
+  "Make it feel early but not overhyped"
 ];
 
 const hooks = [
@@ -105,7 +112,45 @@ const threadOpeners = [
   "quick Ritual thought"
 ];
 
-const mentions = "@ritualnet @ritualfnd";
+const mentionMap = {
+  both: "@ritualnet @ritualfnd",
+  net: "@ritualnet",
+  fnd: "@ritualfnd"
+};
+
+const audienceLines = {
+  community: [
+    "the community angle is what makes this fun to watch",
+    "this is the kind of thing a community can actually experiment with"
+  ],
+  builders: [
+    "for builders, the useful part is having more design space than a normal app",
+    "builder takeaway: the user experience still matters more than the infrastructure pitch"
+  ],
+  newcomers: [
+    "for someone new, the simple version is that Ritual makes AI feel more usable inside apps",
+    "you do not need to understand every primitive to see why this direction is interesting"
+  ],
+  airdrop: [
+    "testnet actions feel better when the app teaches something along the way",
+    "a good testnet app should give people more than a checkbox"
+  ],
+  researchers: [
+    "the research angle is the link between agent behavior, state, and verifiable execution",
+    "this gets interesting when AI systems are evaluated through public app behavior"
+  ],
+  friends: [
+    "the simple version: this is one of the AI x crypto projects I keep checking on",
+    "not financial advice, just something I find genuinely interesting"
+  ]
+};
+
+const hookGroups = {
+  opinion: ["hot take", "my honest take", "I might be early on this", "one thing I like about Ritual"],
+  curiosity: ["been thinking about this", "small question", "this is the part I keep coming back to", "quick thought"],
+  builder: ["builder note", "if I were building here", "product thought", "one app idea I keep thinking about"],
+  casual: ["ngl", "small Ritual thought", "Ritual is starting to click for me", "this is kinda interesting"]
+};
 
 let walletAddress = "";
 let selectedProvider = null;
@@ -119,6 +164,11 @@ const elements = {
   topicSelect: document.querySelector("#topicSelect"),
   structureSelect: document.querySelector("#structureSelect"),
   toneSelect: document.querySelector("#toneSelect"),
+  audienceSelect: document.querySelector("#audienceSelect"),
+  lengthSelect: document.querySelector("#lengthSelect"),
+  ctaSelect: document.querySelector("#ctaSelect"),
+  mentionSelect: document.querySelector("#mentionSelect"),
+  hookSelect: document.querySelector("#hookSelect"),
   angleInput: document.querySelector("#angleInput"),
   presetRow: document.querySelector("#presetRow"),
   switchRitual: document.querySelector("#switchRitual"),
@@ -257,21 +307,42 @@ function trimTweet(text) {
   return `${text.slice(0, 270).trim()}...`;
 }
 
-function addMentions(text) {
+function addMentions(text, mentionStyle) {
+  const mentions = mentionMap[mentionStyle] || mentionMap.both;
   const withMentions = text.includes("@ritualnet") || text.includes("@ritualfnd") ? text : `${text}\n\n${mentions}`;
   return trimTweet(withMentions);
+}
+
+function formatByLength(text, length) {
+  if (length === "short") return text.split("\n\n").slice(0, 3).join("\n\n");
+  if (length === "long") return text;
+  return trimTweet(text);
+}
+
+function getCta(ctaStyle) {
+  if (ctaStyle === "none") return "";
+  if (ctaStyle === "watch") return pick(["worth watching imo", "keeping this on my radar", "this is why I keep checking Ritual"]);
+  if (ctaStyle === "builder") return pick(["would love to see more builders try this", "this feels like a good space for small experiments", "builders could make this much easier to understand"]);
+  if (ctaStyle === "question") return pick(["what would you build with this?", "curious what the community thinks", "what is the simplest app that could show this?"]);
+  if (ctaStyle === "testnet") return pick(["testnet apps should make this easier to feel", "this is the kind of thing worth testing onchain", "small testnet actions can explain a lot"]);
+  return pick(["just my take", "that is the part I find interesting", "still early, but worth watching"]);
 }
 
 function buildTweet(topic, structure, tone, angle, index) {
   const data = topics[topic];
   const noun = pick(data.nouns);
   const claim = pick(data.claims);
-  const hook = pick(hooks);
+  const hook = pick(hookGroups[elements.hookSelect.value] || hooks);
   const bridge = pick(bridges);
-  const cta = pick(ctas);
+  const audience = elements.audienceSelect.value;
+  const length = elements.lengthSelect.value;
+  const cta = getCta(elements.ctaSelect.value);
+  const audienceLine = pick(audienceLines[audience] || audienceLines.community);
+  const mentionStyle = elements.mentionSelect.value;
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
+  const close = cta ? `\n\n${cta}` : "";
 
-  if (structure === "thread" || tone === "thread") {
+  if (structure === "thread" || tone === "thread" || length === "thread") {
     return addMentions([
       pick(threadOpeners),
       "",
@@ -279,51 +350,64 @@ function buildTweet(topic, structure, tone, angle, index) {
       "",
       `2/ For ${noun}, the key is not just intelligence. It is execution, memory, and visible state.`,
       "",
-      `3/ ${bridge} ${cta}`,
-    ].join("\n"));
+      `3/ ${audienceLine}. ${bridge}${close}`,
+    ].join("\n"), mentionStyle);
   }
 
+  let output = "";
+
   if (structure === "problem") {
-    return addMentions(`${hook}:\n\nI still think AI x crypto needs apps that feel useful, not just smart.\n\nRitual is interesting to me because ${claim}.\n\n${cta}`);
+    output = `${hook}:\n\nAI x crypto needs apps that feel useful, not just smart.\n\nRitual is interesting to me because ${claim}.\n\n${audienceLine}${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (structure === "contrast") {
-    return addMentions(`${hook}:\n\nAI as a side feature is not that exciting to me.\n\nAI that can actually become part of the app flow is different.\n\nthat is why I keep coming back to ${noun} on Ritual`);
+    output = `${hook}:\n\nAI as a side feature is not that exciting to me.\n\nAI that can actually become part of the app flow is different.\n\nthat is why I keep coming back to ${noun} on Ritual${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (structure === "fact") {
-    return addMentions(`${hook}:\n\nRitual is not interesting to me because it has AI branding.\n\nit is interesting because ${claim}.\n\n${bridge}`);
+    output = `${hook}:\n\nRitual is not interesting to me because it has AI branding.\n\nit is interesting because ${claim}.\n\n${bridge}${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (structure === "story") {
-    return addMentions(`${hook}:\n\nimagine using an app where the agent does the work, leaves a record, and keeps getting better over time\n\nthat is the Ritual idea I keep thinking about: ${claim}.${personalAngle}`);
+    output = `${hook}:\n\nimagine using an app where the agent does the work, leaves a record, and keeps getting better over time\n\nthat is the Ritual idea I keep thinking about: ${claim}.${personalAngle}${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (structure === "question") {
-    return addMentions(`${hook}:\n\nwhat should apps look like when ${claim}?\n\nmy guess: the best Ritual apps will make ${noun} feel simple, not technical`);
+    output = `${hook}:\n\nwhat should apps look like when ${claim}?\n\nmy guess: the best Ritual apps will make ${noun} feel simple, not technical${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (structure === "builder") {
-    return addMentions(`${hook}:\n\nif I were building around ${noun}, I would not lead with the infra\n\nI would lead with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}`);
+    output = `${hook}:\n\nif I were building around ${noun}, I would not lead with the infra\n\nI would lead with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (structure === "myth") {
-    return addMentions(`${hook}:\n\nI do not see Ritual as just another AI narrative play.\n\nwhat makes it interesting is the chance to build apps where ${claim}.\n\nthat feels like a bigger design space for ${noun}`);
+    output = `${hook}:\n\nI do not see Ritual as just another AI narrative play.\n\nwhat makes it interesting is the chance to build apps where ${claim}.\n\nthat feels like a bigger design space for ${noun}${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (tone === "hype") {
-    return addMentions(`${hook}\n\n${noun} make Ritual feel like more than another chain because ${claim}. ${bridge}\n\n${cta}`);
+    output = `${hook}\n\n${noun} make Ritual feel like more than another chain because ${claim}. ${bridge}${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (tone === "builder") {
-    return addMentions(`if you are building around ${noun}, start from the user outcome first\n\nthen use Ritual for proof, memory, or action\n\n${bridge}${personalAngle}`);
+    output = `if you are building around ${noun}, start from the user outcome first\n\nthen use Ritual for proof, memory, or action\n\n${bridge}${personalAngle}${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
   if (tone === "curious") {
-    return addMentions(`what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible`);
+    output = `what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible${close}`;
+    return addMentions(formatByLength(output, length), mentionStyle);
   }
 
-  return addMentions(`${hook}:\n\n${claim}.\n\nthat is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}\n\n${cta}`);
+  output = `${hook}:\n\n${claim}.\n\nthat is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}${close}`;
+  return addMentions(formatByLength(output, length), mentionStyle);
 }
 
 function generateDrafts(txHash = "") {
@@ -437,6 +521,11 @@ function buildGenerateMemo() {
     topic: elements.topicSelect.value,
     structure: elements.structureSelect.value,
     tone: elements.toneSelect.value,
+    audience: elements.audienceSelect.value,
+    length: elements.lengthSelect.value,
+    cta: elements.ctaSelect.value,
+    mention: elements.mentionSelect.value,
+    hook: elements.hookSelect.value,
     createdAt: new Date().toISOString()
   });
 }

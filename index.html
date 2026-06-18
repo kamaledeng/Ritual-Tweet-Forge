@@ -45,19 +45,25 @@
             <span>Community content tool</span>
             <strong>Ritual Chain 1979</strong>
           </div>
-          <h1>Never get stuck writing about Ritual again.</h1>
+          <h1>Forge unique Ritual tweets in seconds.</h1>
           <p class="intro">
-            Pick a topic, tone, and format. The forge creates unique Ritual tweet drafts so community members can post
-            without everyone sounding the same.
+            Build a tweet from topic, structure, tone, audience, length, CTA, and custom angle. Each generation requires
+            a Ritual Testnet gas transaction.
           </p>
 
-          <div class="purpose-panel">
-            <strong>What this is for</strong>
-            <p>
-              Many people want to support Ritual but do not know what to tweet. This app gives them fresh tweet ideas,
-              hooks, and short threads. Each generation is mixed from many angles, so even a large community gets
-              different outputs.
-            </p>
+          <div class="hero-metrics" aria-label="Tweet forge capabilities">
+            <div>
+              <strong>8</strong>
+              <span>structures</span>
+            </div>
+            <div>
+              <strong>6</strong>
+              <span>topics</span>
+            </div>
+            <div>
+              <strong>gas</strong>
+              <span>per generate</span>
+            </div>
           </div>
 
           <form class="battle-form" id="tweetForm">
@@ -97,6 +103,60 @@
                   <option value="builder">Builder-focused</option>
                   <option value="curious">Curious question</option>
                   <option value="thread">Mini thread</option>
+                </select>
+              </label>
+              <label>
+                <span>Audience</span>
+                <select id="audienceSelect">
+                  <option value="community">Ritual community</option>
+                  <option value="builders">Builders</option>
+                  <option value="newcomers">Newcomers</option>
+                  <option value="airdrop">Testnet users</option>
+                  <option value="researchers">AI x crypto researchers</option>
+                  <option value="friends">Casual followers</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                <span>Length</span>
+                <select id="lengthSelect">
+                  <option value="short">Short punchy</option>
+                  <option value="medium">Medium tweet</option>
+                  <option value="long">Detailed tweet</option>
+                  <option value="thread">3-part mini thread</option>
+                </select>
+              </label>
+              <label>
+                <span>CTA style</span>
+                <select id="ctaSelect">
+                  <option value="soft">Soft opinion</option>
+                  <option value="watch">Worth watching</option>
+                  <option value="builder">Builder invitation</option>
+                  <option value="question">Ask the community</option>
+                  <option value="testnet">Try testnet</option>
+                  <option value="none">No CTA</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                <span>Ritual mentions</span>
+                <select id="mentionSelect">
+                  <option value="both">@ritualnet + @ritualfnd</option>
+                  <option value="net">@ritualnet only</option>
+                  <option value="fnd">@ritualfnd only</option>
+                </select>
+              </label>
+              <label>
+                <span>Hook style</span>
+                <select id="hookSelect">
+                  <option value="opinion">Opinion hook</option>
+                  <option value="curiosity">Curiosity hook</option>
+                  <option value="builder">Builder hook</option>
+                  <option value="casual">Casual hook</option>
                 </select>
               </label>
             </div>

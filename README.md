@@ -6,6 +6,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 
 - Ritual tweet draft generator for community members
 - Topic, tone, and custom angle controls
+- Audience, length, CTA, mention, and hook controls
 - Content structures: Problem First, Comparison / Contrast, Fact Lead, Narrative, Question Hook, Builder Insight, Myth vs Reality, and Mini Thread
 - Five unique drafts per generation
 - Required Ritual Testnet gas transaction before each generation
