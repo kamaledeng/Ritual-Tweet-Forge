@@ -270,6 +270,27 @@ h1 {
   text-transform: uppercase;
 }
 
+.purpose-panel {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid rgba(245, 189, 81, 0.26);
+  border-radius: 8px;
+  background: rgba(245, 189, 81, 0.075);
+}
+
+.purpose-panel strong {
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 20px;
+}
+
+.purpose-panel p {
+  margin: 0;
+  color: var(--soft);
+  line-height: 1.55;
+}
+
 .battle-form {
   display: grid;
   gap: 18px;
@@ -582,6 +603,13 @@ meter::-webkit-meter-optimum-value {
   font-size: 13px;
   font-weight: 800;
   overflow-wrap: anywhere;
+}
+
+.anchor-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
 }
 
 .battle-timeline {

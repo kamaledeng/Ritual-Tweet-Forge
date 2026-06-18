@@ -65,6 +65,14 @@
             </div>
           </div>
 
+          <div class="purpose-panel">
+            <strong>What this app is for</strong>
+            <p>
+              Ritual Agent Arena is a community playground for testing Ritual-native app ideas. Builders can compare
+              agent strategies, share the result, then anchor the battle on Ritual Testnet with a small gas transaction.
+            </p>
+          </div>
+
           <form class="battle-form" id="battleForm">
             <label>
               <span>Battle challenge</span>
@@ -164,6 +172,11 @@
               <button class="share-link" id="anchorBattle" type="button">Anchor on Ritual</button>
               <a class="share-link" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noreferrer">Share result</a>
             </div>
+            <p class="anchor-note">
+              Anchoring sends a 0 RITUAL transaction to your own wallet with the battle memo in tx data. It only uses
+              Ritual testnet gas. If your wallet says simulation is unavailable, review the details and continue only
+              if the chain, sender, and 0 value are correct.
+            </p>
             <a class="tx-link" id="txLink" href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">No Ritual transaction yet</a>
           </div>
           <div class="battle-timeline" id="battleTimeline" aria-label="Battle timeline">

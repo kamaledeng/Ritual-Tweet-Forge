@@ -340,7 +340,7 @@ async function anchorCurrentBattle() {
   if (!walletAddress) return;
 
   try {
-    elements.statusLine.textContent = "Preparing Ritual Testnet transaction...";
+    elements.statusLine.textContent = "Preparing Ritual Testnet transaction. If wallet simulation is unavailable, verify it is 0 RITUAL to your own address, then continue.";
     await ensureRitualNetwork();
 
     const txHash = await provider.request({
@@ -357,8 +357,11 @@ async function anchorCurrentBattle() {
     elements.txLink.href = `${ritualChain.blockExplorerUrls[0]}/tx/${txHash}`;
     elements.txLink.textContent = `Ritual tx: ${txHash.slice(0, 10)}...${txHash.slice(-8)}`;
     elements.statusLine.textContent = "Battle anchored on Ritual Testnet. This used testnet gas and created an explorer record.";
-  } catch {
-    elements.statusLine.textContent = "Transaction was not sent. Check wallet network, testnet balance, or user rejection.";
+  } catch (error) {
+    const message = String(error?.message || "").toLowerCase();
+    elements.statusLine.textContent = message.includes("insufficient")
+      ? "Transaction was not sent. Get Ritual testnet tokens from the faucet, then try again."
+      : "Transaction was not sent. Check wallet network, testnet balance, or user rejection.";
   }
 }
 

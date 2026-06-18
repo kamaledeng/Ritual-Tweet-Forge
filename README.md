@@ -5,6 +5,7 @@ Premium static web app for a Ritual-native multi-agent battle experience.
 ## Features
 
 - Agent-vs-agent battle simulator with judge verdicts
+- Clear community purpose section for builders and reviewers
 - Premium first-screen arena interface with preset challenge prompts
 - Battle telemetry for persistence, coordination, and Ritual fit
 - Agent roster section with Ritual-native roles and strengths
