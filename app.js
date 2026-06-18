@@ -87,6 +87,23 @@ const hooks = [
   "this is the part people may miss"
 ];
 
+const questionHooks = [
+  "what if AI apps did more than answer prompts?",
+  "what changes when agents can leave a record onchain?",
+  "what would you build if AI could actually act inside the app?",
+  "is the next AI x crypto app going to feel more like a tool than a chatbot?",
+  "what if testnet actions were actually useful?"
+];
+
+const openerHooks = [
+  "random Ritual thought",
+  "been thinking about this today",
+  "one thing that clicked for me",
+  "quick opinion",
+  "tiny builder note",
+  "this feels underrated"
+];
+
 const bridges = [
   "that is way more useful than another vague AI dashboard",
   "the cool part is users can actually see something happen",
@@ -104,6 +121,17 @@ const ctas = [
   "if you are into AI x crypto, this is worth a look",
   "more experiments like this would be fun"
 ];
+
+const endings = [
+  "curious how this plays out",
+  "still early, but the direction is interesting",
+  "I want to see more simple apps around this",
+  "this could be easier to feel through testnet apps",
+  "not overthinking it, just watching the experiments",
+  "the next few builder experiments should be fun"
+];
+
+const hashtags = ["#Ritual", "#AI", "#CryptoAI", "#Web3", "#AutonomousAgents"];
 
 const threadOpeners = [
   "few quick thoughts on Ritual",
@@ -192,6 +220,7 @@ const elements = {
   walletList: document.querySelector("#walletList"),
   closeWalletModal: document.querySelector("#closeWalletModal"),
   networkStatus: document.querySelector("#networkStatus"),
+  copyToast: document.querySelector("#copyToast"),
   canvas: document.querySelector("#arenaField")
 };
 
@@ -206,6 +235,29 @@ function randomInt(max) {
 
 function pick(items) {
   return items[randomInt(items.length)];
+}
+
+function maybeHashtag(text, index) {
+  const first = pick(hashtags);
+  const second = pick(hashtags.filter((tag) => tag !== first));
+
+  if (index % 3 === 0) return `${text}\n\n${first} ${second}`;
+  if (index % 3 === 1) {
+    const parts = text.split("\n\n");
+    parts.splice(Math.min(1, parts.length), 0, first);
+    return parts.join("\n\n");
+  }
+
+  return text;
+}
+
+function pickHook() {
+  const style = elements.hookSelect.value;
+  if (style === "curiosity") return pick(questionHooks);
+  if (style === "casual") return pick(openerHooks);
+  if (randomInt(4) === 0) return pick(questionHooks);
+  if (randomInt(3) === 0) return pick(openerHooks);
+  return pick(hookGroups[style] || hooks);
 }
 
 function shortAddress(address) {
@@ -332,7 +384,7 @@ function buildTweet(topic, structure, tone, angle, index) {
   const data = topics[topic];
   const noun = pick(data.nouns);
   const claim = pick(data.claims);
-  const hook = pick(hookGroups[elements.hookSelect.value] || hooks);
+  const hook = pickHook();
   const bridge = pick(bridges);
   const audience = elements.audienceSelect.value;
   const length = elements.lengthSelect.value;
@@ -340,10 +392,11 @@ function buildTweet(topic, structure, tone, angle, index) {
   const audienceLine = pick(audienceLines[audience] || audienceLines.community);
   const mentionStyle = elements.mentionSelect.value;
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
-  const close = cta ? `\n\n${cta}` : "";
+  const ending = pick(endings);
+  const close = cta ? `\n\n${cta}\n\n${ending}` : `\n\n${ending}`;
 
   if (structure === "thread" || tone === "thread" || length === "thread") {
-    return addMentions([
+    return addMentions(maybeHashtag([
       pick(threadOpeners),
       "",
       `1/ ${hook}. ${claim}.`,
@@ -351,63 +404,63 @@ function buildTweet(topic, structure, tone, angle, index) {
       `2/ For ${noun}, the key is not just intelligence. It is execution, memory, and visible state.`,
       "",
       `3/ ${audienceLine}. ${bridge}${close}`,
-    ].join("\n"), mentionStyle);
+    ].join("\n"), index), mentionStyle);
   }
 
   let output = "";
 
   if (structure === "problem") {
     output = `${hook}:\n\nAI x crypto needs apps that feel useful, not just smart.\n\nRitual is interesting to me because ${claim}.\n\n${audienceLine}${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (structure === "contrast") {
     output = `${hook}:\n\nAI as a side feature is not that exciting to me.\n\nAI that can actually become part of the app flow is different.\n\nthat is why I keep coming back to ${noun} on Ritual${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (structure === "fact") {
     output = `${hook}:\n\nRitual is not interesting to me because it has AI branding.\n\nit is interesting because ${claim}.\n\n${bridge}${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (structure === "story") {
     output = `${hook}:\n\nimagine using an app where the agent does the work, leaves a record, and keeps getting better over time\n\nthat is the Ritual idea I keep thinking about: ${claim}.${personalAngle}${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (structure === "question") {
     output = `${hook}:\n\nwhat should apps look like when ${claim}?\n\nmy guess: the best Ritual apps will make ${noun} feel simple, not technical${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (structure === "builder") {
     output = `${hook}:\n\nif I were building around ${noun}, I would not lead with the infra\n\nI would lead with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (structure === "myth") {
     output = `${hook}:\n\nI do not see Ritual as just another AI narrative play.\n\nwhat makes it interesting is the chance to build apps where ${claim}.\n\nthat feels like a bigger design space for ${noun}${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (tone === "hype") {
     output = `${hook}\n\n${noun} make Ritual feel like more than another chain because ${claim}. ${bridge}${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (tone === "builder") {
     output = `if you are building around ${noun}, start from the user outcome first\n\nthen use Ritual for proof, memory, or action\n\n${bridge}${personalAngle}${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   if (tone === "curious") {
     output = `what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible${close}`;
-    return addMentions(formatByLength(output, length), mentionStyle);
+    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
   }
 
   output = `${hook}:\n\n${claim}.\n\nthat is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}${close}`;
-  return addMentions(formatByLength(output, length), mentionStyle);
+  return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
 }
 
 function generateDrafts(txHash = "") {
@@ -463,6 +516,32 @@ function selectDraft(draft) {
   renderDrafts(latestDrafts);
 }
 
+function showCopyFeedback(button, card) {
+  if (button) {
+    const previousText = button.textContent;
+    button.textContent = "Copied";
+    button.classList.add("copied");
+    setTimeout(() => {
+      button.textContent = previousText;
+      button.classList.remove("copied");
+    }, 1400);
+  }
+
+  if (card) {
+    card.classList.add("copied-flash");
+    setTimeout(() => card.classList.remove("copied-flash"), 900);
+  }
+
+  elements.copyToast.classList.add("active");
+  setTimeout(() => elements.copyToast.classList.remove("active"), 1500);
+}
+
+async function copyTweetText(text, button = null, card = null) {
+  await navigator.clipboard.writeText(text);
+  elements.statusLine.textContent = "Copied. Paste it into X.";
+  showCopyFeedback(button, card);
+}
+
 function loadHistory() {
   return JSON.parse(localStorage.getItem("ritual-tweet-forge") || "[]");
 }
@@ -493,8 +572,7 @@ async function copySelectedTweet() {
     return;
   }
 
-  await navigator.clipboard.writeText(selectedDraft.text);
-  elements.statusLine.textContent = "Tweet copied. You can paste it into X.";
+  await copyTweetText(selectedDraft.text, elements.copyTweet);
 }
 
 function stringToHex(value) {
@@ -737,8 +815,7 @@ elements.tweetOutput.addEventListener("click", (event) => {
   if (!draft) return;
 
   if (event.target.closest("[data-action='copy']")) {
-    navigator.clipboard.writeText(draft.text);
-    elements.statusLine.textContent = "Tweet copied. Paste it into X.";
+    copyTweetText(draft.text, event.target.closest("button"), card);
     selectDraft(draft);
     return;
   }

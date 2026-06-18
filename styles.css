@@ -580,6 +580,11 @@ select:focus {
   background: rgba(114, 241, 181, 0.075);
 }
 
+.tweet-card.copied-flash {
+  border-color: rgba(245, 189, 81, 0.78);
+  box-shadow: 0 0 0 4px rgba(245, 189, 81, 0.12);
+}
+
 .tweet-card small {
   color: var(--green);
   font-size: 11px;
@@ -611,6 +616,13 @@ select:focus {
   cursor: pointer;
   font-size: 13px;
   font-weight: 800;
+}
+
+.tweet-card button.copied,
+.share-link.copied {
+  border-color: rgba(114, 241, 181, 0.7);
+  background: rgba(114, 241, 181, 0.18);
+  color: var(--green);
 }
 
 #selectedTweet {
@@ -1018,6 +1030,30 @@ meter::-webkit-meter-optimum-value {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.045);
+}
+
+.copy-toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 50;
+  transform: translateY(18px);
+  opacity: 0;
+  pointer-events: none;
+  padding: 12px 15px;
+  border: 1px solid rgba(114, 241, 181, 0.42);
+  border-radius: 999px;
+  background: rgba(10, 18, 15, 0.94);
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 900;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.copy-toast.active {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .processing .agent-card {
