@@ -355,13 +355,29 @@ function injectMentions(text, mentionStyle, index) {
   const mentions = getMentions(mentionStyle, index);
   let output = text;
 
-  if (mentions.includes("@ritualnet") && /\bRitual\b/.test(output) && index % 3 !== 2) {
-    output = output.replace(/\bRitual\b/, "@ritualnet");
-    if (mentions.includes("@ritualfnd")) {
+  if (mentions.includes("@ritualnet") && index % 3 !== 2) {
+    output = output
+      .replace(/\bRitual is interesting to me because\b/i, "what @ritualnet is building feels interesting because")
+      .replace(/\bRitual is not interesting to me because\b/i, "I am not watching @ritualnet just because")
+      .replace(/\bRitual makes it feel\b/i, "@ritualnet makes it feel")
+      .replace(/\bon Ritual\b/i, "on @ritualnet")
+      .replace(/\bRitual ecosystem\b/i, "@ritualnet ecosystem")
+      .replace(/\bRitual idea\b/i, "@ritualnet idea")
+      .replace(/\bRitual apps\b/i, "@ritualnet apps")
+      .replace(/\bRitual\b/i, "@ritualnet");
+
+    if (!output.includes("@ritualnet")) {
       const parts = output.split("\n\n");
-      parts.splice(Math.min(2, parts.length), 0, "@ritualfnd");
+      parts.splice(Math.min(2, parts.length), 0, "this is why I keep watching @ritualnet");
       output = parts.join("\n\n");
     }
+
+    if (mentions.includes("@ritualfnd")) {
+      const parts = output.split("\n\n");
+      parts.splice(Math.min(3, parts.length), 0, "also keeping an eye on @ritualfnd");
+      output = parts.join("\n\n");
+    }
+
     return trimTweet(output);
   }
 
