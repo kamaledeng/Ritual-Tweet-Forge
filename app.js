@@ -657,6 +657,10 @@ function buildImagePromptMemo() {
   });
 }
 
+function selectedOptionLabel(select) {
+  return select.selectedOptions[0]?.textContent.trim() || select.value;
+}
+
 const imageStyles = {
   whiteboard: "hand-drawn whiteboard, black and white, rough marker lines, clean background, simple labels",
   pencil: "hand-drawn pencil sketch, black and white, rough pencil lines, light paper texture, clean composition",
@@ -690,7 +694,16 @@ function buildImagePrompt() {
     return "";
   }
 
+  const ratioLabel = selectedOptionLabel(elements.imageRatio);
+  const styleLabel = selectedOptionLabel(elements.imageStyle);
+  const sceneLabel = selectedOptionLabel(elements.imageScene);
+  const modeLabel = selectedOptionLabel(elements.imagePromptMode);
+  const buildId = `${Date.now().toString(36)}-${randomInt(9999).toString().padStart(4, "0")}`;
+
   const prompt = [
+    `Image prompt build: ${buildId}`,
+    `Selected setup: ${ratioLabel} / ${styleLabel} / ${sceneLabel} / ${modeLabel}`,
+    "",
     `Create an image to accompany this tweet about ${selectedDraft.topic}:`,
     `"${selectedDraft.text}"`,
     "",
@@ -708,8 +721,9 @@ function buildImagePrompt() {
   ].filter(Boolean).join("\n");
 
   elements.imagePrompt.value = prompt;
+  elements.imagePrompt.scrollTop = 0;
   elements.statusLine.textContent = "Image prompt built. Copy it into your preferred AI image generator.";
-  elements.promptState.textContent = "Built";
+  elements.promptState.textContent = `Built ${buildId.slice(-4)}`;
   elements.promptState.classList.remove("stale");
   return prompt;
 }
