@@ -10,6 +10,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Five unique drafts per generation
 - Required Ritual Testnet gas transaction before each generation
 - Required mentions for `@ritualnet` and `@ritualfnd`
+- Casual human-sounding outputs with no hashtags or visible structure labels
 - Copy-to-clipboard buttons and X share flow
 - Local tweet draft history
 - Ritual Testnet wallet helper using Chain ID `1979`

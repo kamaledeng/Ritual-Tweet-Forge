@@ -70,39 +70,39 @@ const quickAngles = [
 ];
 
 const hooks = [
-  "The interesting part about Ritual is not just AI onchain.",
-  "A lot of people talk about AI agents, but Ritual makes the question sharper.",
-  "My current Ritual thesis:",
-  "If crypto apps are going to use AI seriously, one thing matters:",
-  "The underrated Ritual angle:",
-  "Ritual feels different because it treats AI as something apps can actually use.",
-  "One way to understand Ritual:",
-  "The next wave of AI x crypto probably will not look like chatbots."
+  "ngl, Ritual gets more interesting the more I look at it",
+  "been thinking about Ritual lately",
+  "Ritual is one of those projects that makes AI x crypto feel less abstract",
+  "the part I like about Ritual is pretty simple",
+  "I think people are sleeping on what Ritual is trying to unlock",
+  "Ritual feels different when you stop looking at it as just another chain",
+  "one reason I keep watching Ritual",
+  "AI x crypto gets way more interesting when apps can actually do something useful"
 ];
 
 const bridges = [
-  "Instead of making users trust an offchain black box, the app can create a visible record.",
-  "That matters because communities need proof, not just screenshots.",
-  "This is where testnet apps become more than tasks; they become education.",
-  "The useful version is simple: give users a reason to think, click, and transact.",
-  "The best apps will hide the infrastructure and show the outcome.",
-  "That is the gap Ritual builders can turn into products."
+  "that is way more useful than another vague AI dashboard",
+  "the cool part is users can actually see something happen",
+  "that makes testnet activity feel less like a chore",
+  "simple apps around this could teach people faster than long docs",
+  "the best version probably feels normal to users and powerful under the hood",
+  "that is the kind of thing builders can turn into real products"
 ];
 
 const ctas = [
-  "Worth watching.",
-  "I want to see more builders experiment with this.",
-  "This is why I am paying attention to Ritual.",
-  "Small testnet apps can explain big infrastructure better than long threads.",
-  "If you are building in AI x crypto, Ritual is worth studying.",
-  "The community should try more experiments like this."
+  "def worth watching",
+  "would love to see more builders try this",
+  "this is why I am paying attention",
+  "small apps can explain this better than huge threads",
+  "if you are into AI x crypto, this is worth a look",
+  "more experiments like this would be fun"
 ];
 
 const threadOpeners = [
-  "3 thoughts on Ritual and why it matters:",
-  "A simple way to think about Ritual:",
-  "Why I think Ritual is interesting for builders:",
-  "Ritual in one short thread:"
+  "few quick thoughts on Ritual",
+  "how I am thinking about Ritual rn",
+  "why Ritual feels interesting to me",
+  "quick Ritual thought"
 ];
 
 const mentions = "@ritualnet @ritualfnd";
@@ -269,64 +269,61 @@ function buildTweet(topic, structure, tone, angle, index) {
   const hook = pick(hooks);
   const bridge = pick(bridges);
   const cta = pick(ctas);
-  const tagSet = index % 2 === 0 ? "#Ritual #AI" : "#RitualNetwork #CryptoAI";
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
 
   if (structure === "thread" || tone === "thread") {
     return addMentions([
       pick(threadOpeners),
       "",
-      `1/ ${hook} ${claim}.`,
+      `1/ ${hook}. ${claim}.`,
       "",
       `2/ For ${noun}, the key is not just intelligence. It is execution, memory, and visible state.`,
       "",
       `3/ ${bridge} ${cta}`,
-      "",
-      tagSet
     ].join("\n"));
   }
 
   if (structure === "problem") {
-    return addMentions(`Problem: most AI x crypto apps still feel like chatbots with wallets.\n\nRitual points at a different path: ${claim}.\n\nThat is why ${noun} are worth watching.\n\n${cta}\n\n${tagSet}`);
+    return addMentions(`most AI x crypto apps still feel like chatbots with wallets\n\nRitual feels more interesting because ${claim}.\n\nthat is why ${noun} are worth watching imo. ${cta}`);
   }
 
   if (structure === "contrast") {
-    return addMentions(`Most chains: smart contracts wait for offchain AI to send results.\n\nRitual: apps can be designed around AI that thinks, acts, and leaves visible state.\n\nFor ${noun}, that contrast matters.\n\n${tagSet}`);
+    return addMentions(`most chains make AI feel like something sitting outside the app\n\nRitual makes it feel closer to the actual product logic\n\nfor ${noun}, that difference matters a lot`);
   }
 
   if (structure === "fact") {
-    return addMentions(`Fact: Ritual Chain is built around AI-native execution, not just another app layer.\n\nThe interesting part: ${claim}.\n\n${bridge}\n\n${tagSet}`);
+    return addMentions(`Ritual Chain is not just another place to deploy contracts\n\nwhat stands out to me is that ${claim}.\n\n${bridge}`);
   }
 
   if (structure === "story") {
-    return addMentions(`Imagine opening an app where an AI agent does the work, creates a record, and keeps improving over time.\n\nThat is the Ritual idea I keep coming back to: ${claim}.${personalAngle}\n\n${tagSet}`);
+    return addMentions(`imagine opening an app where an AI agent does the work, creates a record, and keeps improving over time\n\nthat is the Ritual idea I keep coming back to: ${claim}.${personalAngle}`);
   }
 
   if (structure === "question") {
-    return addMentions(`Question for the Ritual community:\n\nWhat becomes possible when ${claim}?\n\nMy answer starts with ${noun}. The best apps will make that feel simple for users.\n\n${tagSet}`);
+    return addMentions(`what becomes possible when ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will probably make all of this feel simple for users`);
   }
 
   if (structure === "builder") {
-    return addMentions(`Builder note:\n\nIf you are building around ${noun}, do not start with the infra.\n\nStart with the user outcome. Then use Ritual for proof, memory, or action.\n\n${bridge}\n\n${tagSet}`);
+    return addMentions(`if you are building around ${noun}, I would not start with the infra\n\nstart with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}`);
   }
 
   if (structure === "myth") {
-    return addMentions(`Myth: Ritual is only about putting AI buzzwords onchain.\n\nReality: the exciting part is apps where ${claim}.\n\nThat is a much bigger design space for ${noun}.\n\n${tagSet}`);
+    return addMentions(`I do not think Ritual is just about putting AI buzzwords onchain\n\nthe more interesting part is apps where ${claim}.\n\nthat opens a much bigger design space for ${noun}`);
   }
 
   if (tone === "hype") {
-    return addMentions(`${hook}\n\n${noun} make Ritual feel like more than another chain: ${claim}. ${bridge}\n\n${cta}\n\n${tagSet}`);
+    return addMentions(`${hook}\n\n${noun} make Ritual feel like more than another chain because ${claim}. ${bridge}\n\n${cta}`);
   }
 
   if (tone === "builder") {
-    return addMentions(`Builder note on Ritual:\n\nIf you are working on ${noun}, start from the user outcome, then use the chain for proof, memory, or action.\n\n${bridge}${personalAngle}\n\n${tagSet}`);
+    return addMentions(`if you are building around ${noun}, start from the user outcome first\n\nthen use Ritual for proof, memory, or action\n\n${bridge}${personalAngle}`);
   }
 
   if (tone === "curious") {
-    return addMentions(`Question for Ritual builders:\n\nWhat would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible.\n\n${tagSet}`);
+    return addMentions(`what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible`);
   }
 
-  return addMentions(`${hook}\n\n${claim}. That is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}\n\n${cta}\n\n${tagSet}`);
+  return addMentions(`${hook}\n\n${claim}. that is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}\n\n${cta}`);
 }
 
 function generateDrafts(txHash = "") {
