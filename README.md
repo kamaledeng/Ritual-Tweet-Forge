@@ -15,7 +15,8 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Mixed hook styles, natural endings, and mentions that can appear mid-tweet or at the end
 - Copy feedback with button state, card flash, and toast confirmation
 - Copy-to-clipboard buttons and X share flow
-- Advanced AI image prompt builder with whiteboard, pencil sketch, sketchnote, protocol diagram, async flow, technical UI, and comic styles
+- Advanced AI image prompt builder with ratio, style, scene, and prompt mode controls
+- Ratio options: 1:1, 16:9, 4:5, 9:16, and 3:2
 - Copyable image prompts based on the selected tweet, topic, seed, and tx hash
 - Local tweet draft history
 - Ritual Testnet wallet helper using Chain ID `1979`

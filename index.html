@@ -242,6 +242,16 @@
             </div>
             <div class="image-controls">
               <label>
+                <span>Image ratio</span>
+                <select id="imageRatio">
+                  <option value="1:1 square">1:1 Square</option>
+                  <option value="16:9 landscape">16:9 Landscape</option>
+                  <option value="4:5 portrait">4:5 Portrait</option>
+                  <option value="9:16 vertical">9:16 Vertical</option>
+                  <option value="3:2 editorial">3:2 Editorial</option>
+                </select>
+              </label>
+              <label>
                 <span>Visual style</span>
                 <select id="imageStyle">
                   <option value="whiteboard">Hand-drawn whiteboard</option>
@@ -254,6 +264,8 @@
                   <option value="comic">Simple educational comic</option>
                 </select>
               </label>
+            </div>
+            <div class="image-controls">
               <label>
                 <span>Scene detail</span>
                 <select id="imageScene">
@@ -263,6 +275,15 @@
                   <option value="bubbles">Speech bubbles and community discussion</option>
                   <option value="docs">Protocol documentation diagram</option>
                   <option value="abstract">Abstract AI x crypto concept</option>
+                </select>
+              </label>
+              <label>
+                <span>Prompt mode</span>
+                <select id="imagePromptMode">
+                  <option value="clean">Clean social post</option>
+                  <option value="diagram">Diagram-focused</option>
+                  <option value="illustration">Illustration-focused</option>
+                  <option value="presentation">Presentation slide</option>
                 </select>
               </label>
             </div>

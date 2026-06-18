@@ -207,8 +207,10 @@ const elements = {
   anchorDraft: document.querySelector("#anchorDraft"),
   shareX: document.querySelector("#shareX"),
   txLink: document.querySelector("#txLink"),
+  imageRatio: document.querySelector("#imageRatio"),
   imageStyle: document.querySelector("#imageStyle"),
   imageScene: document.querySelector("#imageScene"),
+  imagePromptMode: document.querySelector("#imagePromptMode"),
   imagePrompt: document.querySelector("#imagePrompt"),
   generateImagePrompt: document.querySelector("#generateImagePrompt"),
   copyImagePrompt: document.querySelector("#copyImagePrompt"),
@@ -659,6 +661,13 @@ const imageScenes = {
   abstract: "show an abstract AI x crypto concept with agents, blocks, and subtle network geometry"
 };
 
+const imagePromptModes = {
+  clean: "optimized for a clean social media image, strong focal point, not too busy",
+  diagram: "optimized as a clear explainer diagram with readable structure and simple arrows",
+  illustration: "optimized as an illustration with characters or objects that support the tweet idea",
+  presentation: "optimized like a premium presentation slide with strong hierarchy and whitespace"
+};
+
 function buildImagePrompt() {
   if (!selectedDraft) {
     elements.statusLine.textContent = "Select a tweet first, then build the image prompt.";
@@ -669,8 +678,10 @@ function buildImagePrompt() {
     `Create an image to accompany this tweet about ${selectedDraft.topic}:`,
     `"${selectedDraft.text}"`,
     "",
+    `Aspect ratio: ${elements.imageRatio.value}.`,
     `Style: ${imageStyles[elements.imageStyle.value]}.`,
     `Scene: ${imageScenes[elements.imageScene.value]}.`,
+    `Mode: ${imagePromptModes[elements.imagePromptMode.value]}.`,
     "Make the image match the tweet context, not a generic crypto poster.",
     "Do not include long readable text, logos, watermarks, fake UI brand names, or distorted typography.",
     "Use clear composition, strong focal point, and enough empty space for social media cropping.",
