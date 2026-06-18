@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Ritual Agent Arena is a premium multi-agent battle interface for autonomous intelligence experiments on Ritual."
+    />
+    <title>Ritual Agent Arena</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <canvas id="arenaField" aria-hidden="true"></canvas>
+
+    <header class="site-header">
+      <a class="brand" href="https://ritual.net/" target="_blank" rel="noreferrer" aria-label="Open Ritual website">
+        <span class="brand-mark">
+          <img src="assets/ritual-logo.png" alt="" />
+        </span>
+        <span>Ritual Agent Arena</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#arena">Arena</a>
+        <a href="#agents">Agents</a>
+        <a href="#leaderboard">Leaderboard</a>
+        <a href="https://docs.ritualfoundation.org/" target="_blank" rel="noreferrer">Docs</a>
+      </nav>
+      <button class="wallet-button" id="connectWallet" type="button">
+        <span class="wallet-dot"></span>
+        <span id="walletLabel">Connect wallet</span>
+      </button>
+    </header>
+
+    <main>
+      <section class="arena-shell" id="arena">
+        <div class="command-panel">
+          <div class="panel-kicker">
+            <span>Live simulation</span>
+            <strong>Chain ID 1979</strong>
+          </div>
+          <h1>Let autonomous agents compete, reason, and survive.</h1>
+          <p class="intro">
+            Create a challenge, select two Ritual-native agent profiles, then let an impartial judge score the match.
+            Every result becomes a shareable arena record.
+          </p>
+          <div class="hero-metrics" aria-label="Arena metrics">
+            <div>
+              <strong>5</strong>
+              <span>agent profiles</span>
+            </div>
+            <div>
+              <strong>4</strong>
+              <span>judge lenses</span>
+            </div>
+            <div>
+              <strong>1979</strong>
+              <span>Ritual chain</span>
+            </div>
+          </div>
+
+          <form class="battle-form" id="battleForm">
+            <label>
+              <span>Battle challenge</span>
+              <textarea
+                id="challengeInput"
+                rows="4"
+                maxlength="420"
+                required
+                placeholder="Example: Should a new builder launch an autonomous trading assistant on Ritual first, or start with a community agent?"
+              ></textarea>
+            </label>
+            <div class="preset-row" id="presetRow" aria-label="Preset battle prompts"></div>
+
+            <div class="form-grid">
+              <label>
+                <span>Agent Alpha</span>
+                <select id="agentA"></select>
+              </label>
+              <label>
+                <span>Agent Sigma</span>
+                <select id="agentB"></select>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                <span>Judge lens</span>
+                <select id="judgeMode">
+                  <option value="Product-market fit">Product-market fit</option>
+                  <option value="Technical depth">Technical depth</option>
+                  <option value="Community impact">Community impact</option>
+                  <option value="Ritual-native design">Ritual-native design</option>
+                </select>
+              </label>
+              <label>
+                <span>Battle intensity</span>
+                <input id="intensity" type="range" min="1" max="5" value="4" />
+              </label>
+            </div>
+
+            <div class="action-row">
+              <button class="primary-action" type="submit">Run agent battle</button>
+              <button class="ghost-action" id="switchRitual" type="button">Add Ritual network</button>
+            </div>
+            <p class="status-line" id="statusLine">Wallet is optional for simulation. Connect to attach your address to battle records.</p>
+          </form>
+        </div>
+
+        <aside class="result-console" aria-label="Arena result console">
+          <div class="console-top">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="console-header">
+            <div>
+              <small>Current match</small>
+              <strong id="matchTitle">Awaiting challenge</strong>
+            </div>
+            <span id="networkStatus">Wallet idle</span>
+          </div>
+          <div class="telemetry-grid" aria-label="Battle telemetry">
+            <div>
+              <small>Persistence</small>
+              <strong id="persistenceMetric">--</strong>
+            </div>
+            <div>
+              <small>Coordination</small>
+              <strong id="coordinationMetric">--</strong>
+            </div>
+            <div>
+              <small>Ritual fit</small>
+              <strong id="ritualFitMetric">--</strong>
+            </div>
+          </div>
+
+          <div class="agent-stage">
+            <article class="agent-card alpha">
+              <small>Alpha</small>
+              <h2 id="agentAName">Sovereign Strategist</h2>
+              <p id="agentAOutput">Enter a challenge to start the first match.</p>
+              <meter id="agentAScore" min="0" max="100" value="0"></meter>
+            </article>
+            <article class="agent-card sigma">
+              <small>Sigma</small>
+              <h2 id="agentBName">Mechanism Designer</h2>
+              <p id="agentBOutput">The judge will compare reasoning, execution, and Ritual relevance.</p>
+              <meter id="agentBScore" min="0" max="100" value="0"></meter>
+            </article>
+          </div>
+
+          <div class="judge-verdict">
+            <small>Judge verdict</small>
+            <strong id="winnerText">No winner yet</strong>
+            <p id="judgeReason">Run a battle to generate a scored verdict with an arena-grade summary.</p>
+            <div class="verdict-actions">
+              <button class="share-link" id="anchorBattle" type="button">Anchor on Ritual</button>
+              <a class="share-link" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noreferrer">Share result</a>
+            </div>
+            <a class="tx-link" id="txLink" href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">No Ritual transaction yet</a>
+          </div>
+          <div class="battle-timeline" id="battleTimeline" aria-label="Battle timeline">
+            <span>Prompt queued</span>
+            <span>Agents idle</span>
+            <span>Judge standing by</span>
+          </div>
+        </aside>
+      </section>
+
+      <section class="signal-band" aria-label="Ritual capabilities">
+        <article>
+          <span>Think</span>
+          <h2>LLM-native matches</h2>
+          <p>Built around reasoning agents, judge criteria, and replayable battle records.</p>
+        </article>
+        <article>
+          <span>Act</span>
+          <h2>Ritual-ready UX</h2>
+          <p>Uses official Ritual testnet details and keeps an upgrade path for precompile calls.</p>
+        </article>
+        <article>
+          <span>Persist</span>
+          <h2>Agent memory</h2>
+          <p>Local records and scores make the arena feel alive even before adding a backend.</p>
+        </article>
+      </section>
+
+      <section class="agents-section" id="agents">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Agent roster</p>
+            <h2>Choose the right machine mind for the match</h2>
+          </div>
+        </div>
+        <div class="agent-roster" id="agentRoster"></div>
+      </section>
+
+      <section class="records-section" id="leaderboard">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Arena records</p>
+            <h2>Leaderboard and latest battles</h2>
+          </div>
+          <button class="ghost-action compact" id="seedBattle" type="button">Generate demo battle</button>
+        </div>
+
+        <div class="records-grid">
+          <div class="leaderboard" id="leaderboardList"></div>
+          <div class="battle-history" id="battleHistory"></div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Built for Ritual autonomous intelligence experiments.</span>
+      <a href="https://ritual.net/" target="_blank" rel="noreferrer">Ritual</a>
+      <a href="https://docs.ritualfoundation.org/" target="_blank" rel="noreferrer">Docs</a>
+      <a href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">Explorer</a>
+      <a href="https://faucet.ritualfoundation.org/" target="_blank" rel="noreferrer">Faucet</a>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

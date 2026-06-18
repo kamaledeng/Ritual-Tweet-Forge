@@ -1,0 +1,17 @@
+{
+  "name": "ritual-agent-arena",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve.mjs dist"
+  },
+  "keywords": [
+    "ritual",
+    "agents",
+    "arena",
+    "vercel"
+  ]
+}
