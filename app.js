@@ -70,14 +70,14 @@ const quickAngles = [
 ];
 
 const hooks = [
-  "ngl, Ritual gets more interesting the more I look at it",
-  "been thinking about Ritual lately",
-  "Ritual is one of those projects that makes AI x crypto feel less abstract",
-  "the part I like about Ritual is pretty simple",
-  "I think people are sleeping on what Ritual is trying to unlock",
-  "Ritual feels different when you stop looking at it as just another chain",
-  "one reason I keep watching Ritual",
-  "AI x crypto gets way more interesting when apps can actually do something useful"
+  "hot take",
+  "my honest take",
+  "small Ritual thought",
+  "this is why I keep watching Ritual",
+  "one thing I like about Ritual",
+  "Ritual is starting to click for me",
+  "I might be early on this",
+  "this is the part people may miss"
 ];
 
 const bridges = [
@@ -284,31 +284,31 @@ function buildTweet(topic, structure, tone, angle, index) {
   }
 
   if (structure === "problem") {
-    return addMentions(`most AI x crypto apps still feel like chatbots with wallets\n\nRitual feels more interesting because ${claim}.\n\nthat is why ${noun} are worth watching imo. ${cta}`);
+    return addMentions(`${hook}:\n\nI still think AI x crypto needs apps that feel useful, not just smart.\n\nRitual is interesting to me because ${claim}.\n\n${cta}`);
   }
 
   if (structure === "contrast") {
-    return addMentions(`most chains make AI feel like something sitting outside the app\n\nRitual makes it feel closer to the actual product logic\n\nfor ${noun}, that difference matters a lot`);
+    return addMentions(`${hook}:\n\nAI as a side feature is not that exciting to me.\n\nAI that can actually become part of the app flow is different.\n\nthat is why I keep coming back to ${noun} on Ritual`);
   }
 
   if (structure === "fact") {
-    return addMentions(`Ritual Chain is not just another place to deploy contracts\n\nwhat stands out to me is that ${claim}.\n\n${bridge}`);
+    return addMentions(`${hook}:\n\nRitual is not interesting to me because it has AI branding.\n\nit is interesting because ${claim}.\n\n${bridge}`);
   }
 
   if (structure === "story") {
-    return addMentions(`imagine opening an app where an AI agent does the work, creates a record, and keeps improving over time\n\nthat is the Ritual idea I keep coming back to: ${claim}.${personalAngle}`);
+    return addMentions(`${hook}:\n\nimagine using an app where the agent does the work, leaves a record, and keeps getting better over time\n\nthat is the Ritual idea I keep thinking about: ${claim}.${personalAngle}`);
   }
 
   if (structure === "question") {
-    return addMentions(`what becomes possible when ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will probably make all of this feel simple for users`);
+    return addMentions(`${hook}:\n\nwhat should apps look like when ${claim}?\n\nmy guess: the best Ritual apps will make ${noun} feel simple, not technical`);
   }
 
   if (structure === "builder") {
-    return addMentions(`if you are building around ${noun}, I would not start with the infra\n\nstart with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}`);
+    return addMentions(`${hook}:\n\nif I were building around ${noun}, I would not lead with the infra\n\nI would lead with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}`);
   }
 
   if (structure === "myth") {
-    return addMentions(`I do not think Ritual is just about putting AI buzzwords onchain\n\nthe more interesting part is apps where ${claim}.\n\nthat opens a much bigger design space for ${noun}`);
+    return addMentions(`${hook}:\n\nI do not see Ritual as just another AI narrative play.\n\nwhat makes it interesting is the chance to build apps where ${claim}.\n\nthat feels like a bigger design space for ${noun}`);
   }
 
   if (tone === "hype") {
@@ -323,7 +323,7 @@ function buildTweet(topic, structure, tone, angle, index) {
     return addMentions(`what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible`);
   }
 
-  return addMentions(`${hook}\n\n${claim}. that is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}\n\n${cta}`);
+  return addMentions(`${hook}:\n\n${claim}.\n\nthat is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}\n\n${cta}`);
 }
 
 function generateDrafts(txHash = "") {
