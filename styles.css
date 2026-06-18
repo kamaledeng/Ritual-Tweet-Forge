@@ -1056,6 +1056,50 @@ meter::-webkit-meter-optimum-value {
   opacity: 1;
 }
 
+.image-lab {
+  display: grid;
+  gap: 14px;
+  margin: 0 16px 16px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.image-lab-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.image-lab-heading small {
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.image-lab-heading strong {
+  display: block;
+  margin-top: 6px;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 22px;
+}
+
+.image-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#imageCanvas {
+  width: 100%;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
 .processing .agent-card {
   animation: pulsePanel 760ms ease-in-out infinite alternate;
 }

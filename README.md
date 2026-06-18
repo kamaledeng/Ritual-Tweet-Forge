@@ -15,6 +15,8 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Mixed hook styles, natural endings, and mentions that can appear mid-tweet or at the end
 - Copy feedback with button state, card flash, and toast confirmation
 - Copy-to-clipboard buttons and X share flow
+- Advanced visual card generator with Square, Landscape, Portrait ratios and Editorial, Cyber, Minimal, Terminal styles
+- Downloadable PNG image cards based on the selected tweet, topic, seed, and tx hash
 - Local tweet draft history
 - Ritual Testnet wallet helper using Chain ID `1979`
 - EVM wallet selector for OKX Wallet, MetaMask, Rabby, Coinbase, Brave, Trust, and EIP-6963 wallets
