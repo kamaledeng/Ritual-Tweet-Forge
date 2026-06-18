@@ -105,6 +105,8 @@ const threadOpeners = [
   "Ritual in one short thread:"
 ];
 
+const mentions = "@ritualnet @ritualfnd";
+
 let walletAddress = "";
 let selectedProvider = null;
 let selectedWalletName = "";
@@ -115,6 +117,7 @@ let latestDrafts = [];
 const elements = {
   form: document.querySelector("#tweetForm"),
   topicSelect: document.querySelector("#topicSelect"),
+  structureSelect: document.querySelector("#structureSelect"),
   toneSelect: document.querySelector("#toneSelect"),
   angleInput: document.querySelector("#angleInput"),
   presetRow: document.querySelector("#presetRow"),
@@ -254,7 +257,12 @@ function trimTweet(text) {
   return `${text.slice(0, 270).trim()}...`;
 }
 
-function buildTweet(topic, tone, angle, seed, index) {
+function addMentions(text) {
+  const withMentions = text.includes("@ritualnet") || text.includes("@ritualfnd") ? text : `${text}\n\n${mentions}`;
+  return trimTweet(withMentions);
+}
+
+function buildTweet(topic, structure, tone, angle, index) {
   const data = topics[topic];
   const noun = pick(data.nouns);
   const claim = pick(data.claims);
@@ -264,8 +272,8 @@ function buildTweet(topic, tone, angle, seed, index) {
   const tagSet = index % 2 === 0 ? "#Ritual #AI" : "#RitualNetwork #CryptoAI";
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
 
-  if (tone === "thread") {
-    return [
+  if (structure === "thread" || tone === "thread") {
+    return addMentions([
       pick(threadOpeners),
       "",
       `1/ ${hook} ${claim}.`,
@@ -275,26 +283,55 @@ function buildTweet(topic, tone, angle, seed, index) {
       `3/ ${bridge} ${cta}`,
       "",
       tagSet
-    ].join("\n");
+    ].join("\n"));
+  }
+
+  if (structure === "problem") {
+    return addMentions(`Problem: most AI x crypto apps still feel like chatbots with wallets.\n\nRitual points at a different path: ${claim}.\n\nThat is why ${noun} are worth watching.\n\n${cta}\n\n${tagSet}`);
+  }
+
+  if (structure === "contrast") {
+    return addMentions(`Most chains: smart contracts wait for offchain AI to send results.\n\nRitual: apps can be designed around AI that thinks, acts, and leaves visible state.\n\nFor ${noun}, that contrast matters.\n\n${tagSet}`);
+  }
+
+  if (structure === "fact") {
+    return addMentions(`Fact: Ritual Chain is built around AI-native execution, not just another app layer.\n\nThe interesting part: ${claim}.\n\n${bridge}\n\n${tagSet}`);
+  }
+
+  if (structure === "story") {
+    return addMentions(`Imagine opening an app where an AI agent does the work, creates a record, and keeps improving over time.\n\nThat is the Ritual idea I keep coming back to: ${claim}.${personalAngle}\n\n${tagSet}`);
+  }
+
+  if (structure === "question") {
+    return addMentions(`Question for the Ritual community:\n\nWhat becomes possible when ${claim}?\n\nMy answer starts with ${noun}. The best apps will make that feel simple for users.\n\n${tagSet}`);
+  }
+
+  if (structure === "builder") {
+    return addMentions(`Builder note:\n\nIf you are building around ${noun}, do not start with the infra.\n\nStart with the user outcome. Then use Ritual for proof, memory, or action.\n\n${bridge}\n\n${tagSet}`);
+  }
+
+  if (structure === "myth") {
+    return addMentions(`Myth: Ritual is only about putting AI buzzwords onchain.\n\nReality: the exciting part is apps where ${claim}.\n\nThat is a much bigger design space for ${noun}.\n\n${tagSet}`);
   }
 
   if (tone === "hype") {
-    return trimTweet(`${hook}\n\n${noun} make Ritual feel like more than another chain: ${claim}. ${bridge}\n\n${cta}\n\n${tagSet}`);
+    return addMentions(`${hook}\n\n${noun} make Ritual feel like more than another chain: ${claim}. ${bridge}\n\n${cta}\n\n${tagSet}`);
   }
 
   if (tone === "builder") {
-    return trimTweet(`Builder note on Ritual:\n\nIf you are working on ${noun}, start from the user outcome, then use the chain for proof, memory, or action.\n\n${bridge}${personalAngle}\n\n${tagSet}`);
+    return addMentions(`Builder note on Ritual:\n\nIf you are working on ${noun}, start from the user outcome, then use the chain for proof, memory, or action.\n\n${bridge}${personalAngle}\n\n${tagSet}`);
   }
 
   if (tone === "curious") {
-    return trimTweet(`Question for Ritual builders:\n\nWhat would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible.\n\n${tagSet}`);
+    return addMentions(`Question for Ritual builders:\n\nWhat would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible.\n\n${tagSet}`);
   }
 
-  return trimTweet(`${hook}\n\n${claim}. That is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}\n\n${cta}\n\n${tagSet}`);
+  return addMentions(`${hook}\n\n${claim}. That is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}\n\n${cta}\n\n${tagSet}`);
 }
 
-function generateDrafts() {
+function generateDrafts(txHash = "") {
   const topic = elements.topicSelect.value;
+  const structure = elements.structureSelect.value;
   const tone = elements.toneSelect.value;
   const angle = elements.angleInput.value.trim();
   const seed = buildSeed();
@@ -302,8 +339,10 @@ function generateDrafts() {
     id: `${seed}-${index}`,
     seed,
     topic,
+    structure,
     tone,
-    text: buildTweet(topic, tone, angle, seed, index),
+    txHash,
+    text: buildTweet(topic, structure, tone, angle, index),
     createdAt: new Date().toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
   }));
 
@@ -313,10 +352,12 @@ function generateDrafts() {
   selectDraft(drafts[0]);
   saveHistory(drafts);
   renderHistory();
-  elements.outputTitle.textContent = `${topic} / ${tone}`;
+  elements.outputTitle.textContent = `${topic} / ${structure}`;
   elements.variantMetric.textContent = String(drafts.length);
   elements.seedMetric.textContent = seed.slice(-5).toUpperCase();
-  elements.statusLine.textContent = "Fresh tweet drafts generated. Pick one to copy, share, or save on Ritual.";
+  elements.statusLine.textContent = txHash
+    ? "Ritual fee paid. Fresh tweet drafts generated."
+    : "Fresh tweet drafts generated. Pick one to copy, share, or save on Ritual.";
 }
 
 function renderDrafts(drafts) {
@@ -324,7 +365,10 @@ function renderDrafts(drafts) {
     <article class="tweet-card ${selectedDraft?.id === draft.id ? "selected" : ""}" data-draft-id="${escapeHtml(draft.id)}">
       <small>Variant ${index + 1} / ${escapeHtml(draft.topic)}</small>
       <p>${escapeHtml(draft.text)}</p>
-      <button type="button">Select draft</button>
+      <div class="tweet-actions">
+        <button type="button" data-action="select">Select</button>
+        <button type="button" data-action="copy" aria-label="Copy this tweet">Copy</button>
+      </div>
     </article>
   `).join("");
 }
@@ -386,6 +430,17 @@ function buildAnchorMemo(draft) {
     seed: draft.seed,
     preview: draft.text.slice(0, 160),
     createdAt: draft.createdAt
+  });
+}
+
+function buildGenerateMemo() {
+  return JSON.stringify({
+    app: "Ritual Tweet Forge",
+    action: "generate",
+    topic: elements.topicSelect.value,
+    structure: elements.structureSelect.value,
+    tone: elements.toneSelect.value,
+    createdAt: new Date().toISOString()
   });
 }
 
@@ -459,6 +514,31 @@ async function ensureRitualNetwork() {
   const provider = getProvider();
   const chainId = await provider.request({ method: "eth_chainId" });
   if (chainId.toLowerCase() !== ritualChain.chainId.toLowerCase()) await switchToRitual();
+}
+
+async function payGenerationFee() {
+  const provider = getProvider();
+  if (!provider) {
+    elements.statusLine.textContent = "Choose an EVM wallet first. Generation requires Ritual testnet gas.";
+    openWalletModal();
+    return "";
+  }
+
+  if (!walletAddress) await connectWallet();
+  if (!walletAddress) return "";
+
+  elements.statusLine.textContent = "Confirm the Ritual Testnet transaction to generate tweets. Value is 0 RITUAL; you only pay gas.";
+  await ensureRitualNetwork();
+
+  return provider.request({
+    method: "eth_sendTransaction",
+    params: [{
+      from: walletAddress,
+      to: walletAddress,
+      value: "0x0",
+      data: stringToHex(buildGenerateMemo())
+    }]
+  });
 }
 
 async function anchorSelectedDraft() {
@@ -541,9 +621,20 @@ function bootCanvas() {
   draw();
 }
 
-elements.form.addEventListener("submit", (event) => {
+elements.form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  generateDrafts();
+  try {
+    const txHash = await payGenerationFee();
+    if (!txHash) return;
+    elements.txLink.href = `${ritualChain.blockExplorerUrls[0]}/tx/${txHash}`;
+    elements.txLink.textContent = `Generate tx: ${txHash.slice(0, 10)}...${txHash.slice(-8)}`;
+    generateDrafts(txHash);
+  } catch (error) {
+    const message = String(error?.message || "").toLowerCase();
+    elements.statusLine.textContent = message.includes("insufficient")
+      ? "Generation failed. Get Ritual testnet tokens from the faucet, then try again."
+      : "Generation cancelled or failed. Check wallet approval and Ritual Testnet.";
+  }
 });
 
 elements.presetRow.innerHTML = quickAngles.map((angle) => `<button type="button" data-angle="${escapeHtml(angle)}">${escapeHtml(angle)}</button>`).join("");
@@ -557,12 +648,25 @@ elements.tweetOutput.addEventListener("click", (event) => {
   const card = event.target.closest("[data-draft-id]");
   if (!card) return;
   const draft = latestDrafts.find((item) => item.id === card.dataset.draftId);
-  if (draft) selectDraft(draft);
+  if (!draft) return;
+
+  if (event.target.closest("[data-action='copy']")) {
+    navigator.clipboard.writeText(draft.text);
+    elements.statusLine.textContent = "Tweet copied. Paste it into X.";
+    selectDraft(draft);
+    return;
+  }
+
+  selectDraft(draft);
 });
 
 elements.copyTweet.addEventListener("click", copySelectedTweet);
 elements.anchorDraft.addEventListener("click", anchorSelectedDraft);
-elements.generateDemo.addEventListener("click", generateDrafts);
+elements.generateDemo.addEventListener("click", () => {
+  elements.angleInput.value = pick(quickAngles);
+  elements.statusLine.textContent = "Angle randomized. Click generate and confirm the Ritual fee transaction.";
+  document.querySelector("#forge").scrollIntoView({ behavior: "smooth", block: "start" });
+});
 elements.connectWallet.addEventListener("click", connectWallet);
 elements.closeWalletModal.addEventListener("click", closeWalletModal);
 elements.walletModal.addEventListener("click", (event) => {

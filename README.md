@@ -6,8 +6,11 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 
 - Ritual tweet draft generator for community members
 - Topic, tone, and custom angle controls
+- Content structures: Problem First, Comparison / Contrast, Fact Lead, Narrative, Question Hook, Builder Insight, Myth vs Reality, and Mini Thread
 - Five unique drafts per generation
-- Copy-to-clipboard and X share flow
+- Required Ritual Testnet gas transaction before each generation
+- Required mentions for `@ritualnet` and `@ritualfnd`
+- Copy-to-clipboard buttons and X share flow
 - Local tweet draft history
 - Ritual Testnet wallet helper using Chain ID `1979`
 - EVM wallet selector for OKX Wallet, MetaMask, Rabby, Coinbase, Brave, Trust, and EIP-6963 wallets

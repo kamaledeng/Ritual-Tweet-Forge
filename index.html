@@ -74,6 +74,22 @@
                 </select>
               </label>
               <label>
+                <span>Content structure</span>
+                <select id="structureSelect">
+                  <option value="problem">Problem First</option>
+                  <option value="contrast">Comparison / Contrast</option>
+                  <option value="fact">Fact Lead</option>
+                  <option value="story">Narrative / Storytelling</option>
+                  <option value="question">Question Hook</option>
+                  <option value="builder">Builder Insight</option>
+                  <option value="myth">Myth vs Reality</option>
+                  <option value="thread">Mini Thread</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="form-grid">
+              <label>
                 <span>Tone</span>
                 <select id="toneSelect">
                   <option value="clear">Clear and educational</option>
@@ -98,10 +114,10 @@
             <div class="preset-row" id="presetRow" aria-label="Quick tweet angles"></div>
 
             <div class="action-row">
-              <button class="primary-action" type="submit">Generate unique tweets</button>
+              <button class="primary-action" type="submit">Generate with Ritual fee</button>
               <button class="ghost-action" id="switchRitual" type="button">Add Ritual network</button>
             </div>
-            <p class="status-line" id="statusLine">Generate tweets first. Connect wallet only if you want to save one draft on Ritual Testnet.</p>
+            <p class="status-line" id="statusLine">Each generation asks for a 0 RITUAL testnet transaction, so users pay Ritual gas before tweets are created.</p>
           </form>
         </div>
 
@@ -151,8 +167,8 @@
               <a class="share-link" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noreferrer">Open in X</a>
             </div>
             <p class="anchor-note">
-              Saving sends a 0 RITUAL transaction to your own wallet with a short memo of the selected draft. It only
-              uses Ritual testnet gas.
+              Generation already uses Ritual testnet gas. Saving a selected draft sends another optional 0 RITUAL
+              transaction with a short memo of the draft.
             </p>
             <a class="tx-link" id="txLink" href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">No Ritual transaction yet</a>
           </div>
@@ -183,7 +199,7 @@
             <p class="eyebrow">Local history</p>
             <h2>Recent forged tweets</h2>
           </div>
-          <button class="ghost-action compact" id="generateDemo" type="button">Generate demo set</button>
+          <button class="ghost-action compact" id="generateDemo" type="button">Randomize angle</button>
         </div>
         <div class="battle-history" id="tweetHistory"></div>
       </section>

@@ -592,6 +592,12 @@ select:focus {
   white-space: pre-wrap;
 }
 
+.tweet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .tweet-card button {
   justify-self: start;
   min-height: 34px;
