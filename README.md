@@ -1,18 +1,18 @@
-# Ritual Agent Arena
+# Ritual Idea Review Arena
 
-Premium static web app for a Ritual-native multi-agent battle experience.
+Premium static web app for reviewing Ritual app ideas with specialized AI-style agents and saving results on Ritual Testnet.
 
 ## Features
 
-- Agent-vs-agent battle simulator with judge verdicts
+- Ritual app idea reviewer with judge verdicts
 - Clear community purpose section for builders and reviewers
 - Premium first-screen arena interface with preset challenge prompts
-- Battle telemetry for persistence, coordination, and Ritual fit
+- Review telemetry for persistence, coordination, and Ritual fit
 - Agent roster section with Ritual-native roles and strengths
-- Local battle history and leaderboard
+- Local review history and leaderboard
 - Ritual Testnet wallet helper using Chain ID `1979`
 - EVM wallet selector for OKX Wallet, MetaMask, Rabby, Coinbase, Brave, Trust, and EIP-6963 wallets
-- Optional battle anchoring transaction on Ritual Testnet, paid with testnet gas
+- Optional review-saving transaction on Ritual Testnet, paid with testnet gas
 - Official Ritual links for docs, explorer, faucet, and website
 - No framework or backend required, ready for Vercel static deploy
 
@@ -42,4 +42,4 @@ and serves the `dist` directory.
 
 ## Upgrade Path
 
-The current app is frontend-only so it can ship quickly. Next upgrades can connect battles to an API, save records in Supabase, or replace the deterministic simulator with Ritual LLM / agent precompile calls when you are ready.
+The current app is frontend-only so it can ship quickly. Next upgrades can connect reviews to an API, save records in Supabase, or replace the deterministic simulator with Ritual LLM / agent precompile calls when you are ready.

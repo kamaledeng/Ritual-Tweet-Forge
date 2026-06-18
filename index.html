@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Ritual Agent Arena is a premium multi-agent battle interface for autonomous intelligence experiments on Ritual."
+      content="Ritual Idea Review Arena helps builders review Ritual app ideas and save recommendations on Ritual Testnet."
     />
     <title>Ritual Agent Arena</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -45,10 +45,10 @@
             <span>Live simulation</span>
             <strong>Chain ID 1979</strong>
           </div>
-          <h1>Let autonomous agents compete, reason, and survive.</h1>
+          <h1>Test your Ritual app idea before you build.</h1>
           <p class="intro">
-            Create a challenge, select two Ritual-native agent profiles, then let an impartial judge score the match.
-            Every result becomes a shareable arena record.
+            Describe an app idea for Ritual, let specialized reviewers analyze it from different angles, then save the
+            result as a shareable testnet record.
           </p>
           <div class="hero-metrics" aria-label="Arena metrics">
             <div>
@@ -66,40 +66,40 @@
           </div>
 
           <div class="purpose-panel">
-            <strong>What this app is for</strong>
+            <strong>Simple purpose</strong>
             <p>
-              Ritual Agent Arena is a community playground for testing Ritual-native app ideas. Builders can compare
-              agent strategies, share the result, then anchor the battle on Ritual Testnet with a small gas transaction.
+              This app helps builders and community members answer one question: is this idea worth building on Ritual?
+              The reviewers score the idea, explain the strongest direction, and let you save the result on Ritual Testnet.
             </p>
           </div>
 
           <form class="battle-form" id="battleForm">
             <label>
-              <span>Battle challenge</span>
+              <span>Your Ritual app idea</span>
               <textarea
                 id="challengeInput"
                 rows="4"
                 maxlength="420"
                 required
-                placeholder="Example: Should a new builder launch an autonomous trading assistant on Ritual first, or start with a community agent?"
+                placeholder="Example: I want to build an AI auditor that reviews smart contracts and saves the risk score on Ritual Testnet."
               ></textarea>
             </label>
-            <div class="preset-row" id="presetRow" aria-label="Preset battle prompts"></div>
+            <div class="preset-row" id="presetRow" aria-label="Preset app idea prompts"></div>
 
             <div class="form-grid">
               <label>
-                <span>Agent Alpha</span>
+                <span>Reviewer A</span>
                 <select id="agentA"></select>
               </label>
               <label>
-                <span>Agent Sigma</span>
+                <span>Reviewer B</span>
                 <select id="agentB"></select>
               </label>
             </div>
 
             <div class="form-grid">
               <label>
-                <span>Judge lens</span>
+                <span>Review focus</span>
                 <select id="judgeMode">
                   <option value="Product-market fit">Product-market fit</option>
                   <option value="Technical depth">Technical depth</option>
@@ -108,16 +108,16 @@
                 </select>
               </label>
               <label>
-                <span>Battle intensity</span>
+                <span>Review depth</span>
                 <input id="intensity" type="range" min="1" max="5" value="4" />
               </label>
             </div>
 
             <div class="action-row">
-              <button class="primary-action" type="submit">Run agent battle</button>
+              <button class="primary-action" type="submit">Review my idea</button>
               <button class="ghost-action" id="switchRitual" type="button">Add Ritual network</button>
             </div>
-            <p class="status-line" id="statusLine">Wallet is optional for simulation. Connect to attach your address to battle records.</p>
+            <p class="status-line" id="statusLine">Wallet is optional for reviewing. Connect only when you want to save the result on Ritual Testnet.</p>
           </form>
         </div>
 
@@ -129,12 +129,12 @@
           </div>
           <div class="console-header">
             <div>
-              <small>Current match</small>
-              <strong id="matchTitle">Awaiting challenge</strong>
+              <small>Current idea</small>
+              <strong id="matchTitle">Awaiting app idea</strong>
             </div>
             <span id="networkStatus">Wallet idle</span>
           </div>
-          <div class="telemetry-grid" aria-label="Battle telemetry">
+          <div class="telemetry-grid" aria-label="Review telemetry">
             <div>
               <small>Persistence</small>
               <strong id="persistenceMetric">--</strong>
@@ -151,38 +151,38 @@
 
           <div class="agent-stage">
             <article class="agent-card alpha">
-              <small>Alpha</small>
+              <small>Reviewer A</small>
               <h2 id="agentAName">Sovereign Strategist</h2>
-              <p id="agentAOutput">Enter a challenge to start the first match.</p>
+              <p id="agentAOutput">Enter an app idea to get the first review.</p>
               <meter id="agentAScore" min="0" max="100" value="0"></meter>
             </article>
             <article class="agent-card sigma">
-              <small>Sigma</small>
+              <small>Reviewer B</small>
               <h2 id="agentBName">Mechanism Designer</h2>
-              <p id="agentBOutput">The judge will compare reasoning, execution, and Ritual relevance.</p>
+              <p id="agentBOutput">The judge will compare usefulness, execution, and Ritual relevance.</p>
               <meter id="agentBScore" min="0" max="100" value="0"></meter>
             </article>
           </div>
 
           <div class="judge-verdict">
-            <small>Judge verdict</small>
+            <small>Final recommendation</small>
             <strong id="winnerText">No winner yet</strong>
-            <p id="judgeReason">Run a battle to generate a scored verdict with an arena-grade summary.</p>
+            <p id="judgeReason">Submit an app idea to receive a clear build recommendation.</p>
             <div class="verdict-actions">
-              <button class="share-link" id="anchorBattle" type="button">Anchor on Ritual</button>
+              <button class="share-link" id="anchorBattle" type="button">Save on Ritual</button>
               <a class="share-link" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noreferrer">Share result</a>
             </div>
             <p class="anchor-note">
-              Anchoring sends a 0 RITUAL transaction to your own wallet with the battle memo in tx data. It only uses
+              Saving sends a 0 RITUAL transaction to your own wallet with the review memo in tx data. It only uses
               Ritual testnet gas. If your wallet says simulation is unavailable, review the details and continue only
               if the chain, sender, and 0 value are correct.
             </p>
             <a class="tx-link" id="txLink" href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">No Ritual transaction yet</a>
           </div>
-          <div class="battle-timeline" id="battleTimeline" aria-label="Battle timeline">
-            <span>Prompt queued</span>
-            <span>Agents idle</span>
-            <span>Judge standing by</span>
+          <div class="battle-timeline" id="battleTimeline" aria-label="Review timeline">
+            <span>Idea queued</span>
+            <span>Reviewers idle</span>
+            <span>Recommendation engine ready</span>
           </div>
         </aside>
       </section>
@@ -190,18 +190,18 @@
       <section class="signal-band" aria-label="Ritual capabilities">
         <article>
           <span>Think</span>
-          <h2>LLM-native matches</h2>
-          <p>Built around reasoning agents, judge criteria, and replayable battle records.</p>
+          <h2>Idea review</h2>
+          <p>Turn a rough Ritual app idea into a structured recommendation.</p>
         </article>
         <article>
           <span>Act</span>
-          <h2>Ritual-ready UX</h2>
-          <p>Uses official Ritual testnet details and keeps an upgrade path for precompile calls.</p>
+          <h2>Testnet proof</h2>
+          <p>Save the review result with a small Ritual Testnet transaction.</p>
         </article>
         <article>
           <span>Persist</span>
-          <h2>Agent memory</h2>
-          <p>Local records and scores make the arena feel alive even before adding a backend.</p>
+          <h2>Builder signal</h2>
+          <p>Keep a local history of reviewed ideas, scores, and recommendations.</p>
         </article>
       </section>
 
@@ -209,7 +209,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">Agent roster</p>
-            <h2>Choose the right machine mind for the match</h2>
+            <h2>Specialized reviewers for Ritual app ideas</h2>
           </div>
         </div>
         <div class="agent-roster" id="agentRoster"></div>
@@ -219,9 +219,9 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">Arena records</p>
-            <h2>Leaderboard and latest battles</h2>
+            <h2>Reviewed ideas and top agents</h2>
           </div>
-          <button class="ghost-action compact" id="seedBattle" type="button">Generate demo battle</button>
+          <button class="ghost-action compact" id="seedBattle" type="button">Generate demo review</button>
         </div>
 
         <div class="records-grid">
@@ -232,7 +232,7 @@
     </main>
 
     <footer class="site-footer">
-      <span>Built for Ritual autonomous intelligence experiments.</span>
+      <span>Built to review Ritual app ideas and save results on testnet.</span>
       <a href="https://ritual.net/" target="_blank" rel="noreferrer">Ritual</a>
       <a href="https://docs.ritualfoundation.org/" target="_blank" rel="noreferrer">Docs</a>
       <a href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">Explorer</a>

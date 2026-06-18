@@ -49,28 +49,28 @@ const agents = [
 ];
 
 const demoChallenges = [
-  "Which app should win a Ritual community build challenge: an autonomous bounty agent or a multi-agent debate arena?",
-  "How should a new builder explain Ritual Chain to users who have never touched AI precompiles?",
-  "Design a Ritual-native app that can become useful before mainnet but still prove the autonomous agent thesis.",
-  "What is the best way to make agent identity, privacy, and payments understandable in one simple product?"
+  "I want to build an AI auditor for Ritual that reviews smart contracts and saves a public risk score on testnet.",
+  "I want to build a bounty agent where users post small tasks and an autonomous agent judges completed work.",
+  "I want to build a Ritual community idea board where every accepted app idea is saved as a testnet transaction.",
+  "I want to build a private AI helper that explains Ritual docs and lets users save useful answers onchain."
 ];
 
 const presetChallenges = [
   {
     label: "Builder launch",
-    prompt: "A solo builder wants to ship a Ritual app in 48 hours. Should they build an agent arena, an AI auditor, or a bounty agent first?"
+    prompt: "I want to ship a simple Ritual app in 48 hours. The app should be useful for community members and include one testnet transaction."
   },
   {
     label: "Agent economy",
-    prompt: "Design a Ritual-native agent that can earn, spend, and reinvest value without becoming confusing for normal users."
+    prompt: "I want to build an autonomous bounty agent that can score user submissions and create a visible reputation record."
   },
   {
     label: "Privacy UX",
-    prompt: "How should a consumer app explain secrets, attestations, and private AI without sounding like infrastructure documentation?"
+    prompt: "I want to build a private AI assistant for Ritual users, but the app must explain privacy without sounding too technical."
   },
   {
     label: "Community growth",
-    prompt: "What autonomous agent experience would make the Ritual community share results on X every day?"
+    prompt: "I want to build a Ritual community app that creates shareable results people would post on X every day."
   }
 ];
 
@@ -289,7 +289,7 @@ function buildAgentOutput(agent, opponent, challenge, judgeMode, score) {
 
 function buildJudgeReason(winner, loser, judgeMode, scoreGap) {
   const edge = scoreGap > 12 ? "clear edge" : "narrow edge";
-  return `${winner.name} wins by a ${edge} under the ${judgeMode.toLowerCase()} lens. The judge favored stronger Ritual alignment, clearer execution path, and a better bridge from current testnet UX to future autonomous agent primitives. ${loser.name} still contributed useful constraints for the next iteration.`;
+  return `${winner.name} gives the strongest recommendation by a ${edge} under the ${judgeMode.toLowerCase()} lens. The judge favored stronger Ritual alignment, clearer execution path, and a better bridge from current testnet UX to future autonomous agent primitives. ${loser.name} still contributed useful constraints for the next iteration.`;
 }
 
 function buildTelemetry(battle) {
@@ -304,18 +304,18 @@ function buildTelemetry(battle) {
 
 function buildTimeline(battle) {
   return [
-    `Prompt committed / ${battle.judgeMode}`,
-    `${battle.agentA.name} proposed execution path`,
-    `${battle.agentB.name} challenged assumptions`,
-    `Judge selected ${battle.winner.name}`
+    `Idea submitted / ${battle.judgeMode}`,
+    `${battle.agentA.name} reviewed product direction`,
+    `${battle.agentB.name} reviewed Ritual fit`,
+    `Recommendation selected ${battle.winner.name}`
   ];
 }
 
 function setProcessingState(isProcessing) {
   document.body.classList.toggle("processing", isProcessing);
   elements.statusLine.textContent = isProcessing
-    ? "Agents are reasoning through the arena..."
-    : "Battle complete. Result saved locally and ready to share.";
+    ? "Reviewers are analyzing your app idea..."
+    : "Review complete. Result saved locally and ready to share.";
 }
 
 function renderBattle(battle) {
@@ -327,7 +327,7 @@ function renderBattle(battle) {
   elements.agentBOutput.textContent = battle.agentB.output;
   elements.agentAScore.value = battle.agentA.score;
   elements.agentBScore.value = battle.agentB.score;
-  elements.winnerText.textContent = `${battle.winner.name} wins ${battle.winner.score}-${battle.loser.score}`;
+  elements.winnerText.textContent = `${battle.winner.name} recommends build path ${battle.winner.score}-${battle.loser.score}`;
   elements.judgeReason.textContent = battle.verdict;
   elements.shareX.href = buildShareUrl(battle);
   elements.persistenceMetric.textContent = `${telemetry.persistence}%`;
@@ -382,9 +382,9 @@ function runBattle(challenge) {
 function buildShareUrl(battle) {
   const pageUrl = `${window.location.origin}${window.location.pathname}`;
   const text = [
-    "I ran a Ritual Agent Arena battle.",
+    "I reviewed a Ritual app idea.",
     `"${battle.challenge}"`,
-    `Winner: ${battle.winner.name} (${battle.winner.score})`,
+    `Top reviewer: ${battle.winner.name} (${battle.winner.score})`,
     "#Ritual #AutonomousAgents #AI"
   ].join("\n\n");
 
@@ -398,7 +398,7 @@ function stringToHex(value) {
 
 function buildAnchorMemo(battle) {
   return JSON.stringify({
-    app: "Ritual Agent Arena",
+    app: "Ritual Idea Review",
     id: battle.id,
     challenge: battle.challenge.slice(0, 180),
     judgeMode: battle.judgeMode,
@@ -418,13 +418,13 @@ async function ensureRitualNetwork() {
 
 async function anchorCurrentBattle() {
   if (!lastBattle) {
-    elements.statusLine.textContent = "Run a battle first, then anchor the result on Ritual Testnet.";
+    elements.statusLine.textContent = "Review an idea first, then save the result on Ritual Testnet.";
     return;
   }
 
   const provider = getProvider();
   if (!provider) {
-    elements.statusLine.textContent = "Wallet not detected. Use MetaMask or Rabby to anchor a battle.";
+    elements.statusLine.textContent = "Wallet not detected. Use OKX, MetaMask, Rabby, or another EVM wallet to save a review.";
     return;
   }
 
@@ -451,7 +451,7 @@ async function anchorCurrentBattle() {
     lastBattle.txHash = txHash;
     elements.txLink.href = `${ritualChain.blockExplorerUrls[0]}/tx/${txHash}`;
     elements.txLink.textContent = `Ritual tx: ${txHash.slice(0, 10)}...${txHash.slice(-8)}`;
-    elements.statusLine.textContent = "Battle anchored on Ritual Testnet. This used testnet gas and created an explorer record.";
+    elements.statusLine.textContent = "Review saved on Ritual Testnet. This used testnet gas and created an explorer record.";
   } catch (error) {
     const message = String(error?.message || "").toLowerCase();
     elements.statusLine.textContent = message.includes("insufficient")
@@ -490,7 +490,7 @@ function renderRecords() {
         <b>${item.average}</b>
       </article>
     `).join("")
-    : `<article class="empty-state"><strong>No leaderboard yet</strong><span>Run a battle to rank the agents.</span></article>`;
+    : `<article class="empty-state"><strong>No leaderboard yet</strong><span>Review an idea to rank the agents.</span></article>`;
 
   elements.battleHistory.innerHTML = battles.length
     ? battles.map((battle) => `
@@ -499,10 +499,10 @@ function renderRecords() {
           <small>${escapeHtml(battle.createdAt)} / ${escapeHtml(battle.wallet)}</small>
           <strong>${escapeHtml(battle.challenge)}</strong>
         </div>
-        <p>${escapeHtml(battle.winner.name)} won under ${escapeHtml(battle.judgeMode)}.</p>
+        <p>${escapeHtml(battle.winner.name)} gave the strongest recommendation under ${escapeHtml(battle.judgeMode)}.</p>
       </article>
     `).join("")
-    : `<article class="empty-state"><strong>No battles saved</strong><span>Your latest arena records will appear here.</span></article>`;
+    : `<article class="empty-state"><strong>No reviews saved</strong><span>Your latest idea reviews will appear here.</span></article>`;
 }
 
 async function connectWallet() {
@@ -532,7 +532,7 @@ async function connectWallet() {
 
   elements.connectWallet.classList.add("connected");
   elements.walletLabel.textContent = shortAddress(walletAddress);
-  elements.statusLine.textContent = `${selectedWalletName || walletIdentity(provider)} connected. New arena records will include your address preview.`;
+  elements.statusLine.textContent = `${selectedWalletName || walletIdentity(provider)} connected. Saved reviews will include your address preview.`;
   attachProviderListeners(provider);
   await refreshNetwork();
 }
@@ -641,7 +641,7 @@ elements.form.addEventListener("submit", (event) => {
   setTimeout(() => {
     const battle = runBattle(challenge);
     setProcessingState(false);
-    elements.statusLine.textContent = `${battle.winner.name} won. Battle saved to the local arena record.`;
+    elements.statusLine.textContent = `${battle.winner.name} gave the strongest recommendation. Review saved locally.`;
   }, 720);
 });
 
@@ -674,7 +674,7 @@ elements.seedBattle.addEventListener("click", () => {
   const challenge = demoChallenges[hashText(String(Date.now())) % demoChallenges.length];
   elements.challengeInput.value = challenge;
   runBattle(challenge);
-  elements.statusLine.textContent = "Demo battle generated and saved.";
+  elements.statusLine.textContent = "Demo review generated and saved.";
 });
 
 elements.anchorBattle.addEventListener("click", anchorCurrentBattle);
