@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Ritual Idea Review Arena helps builders review Ritual app ideas and save recommendations on Ritual Testnet."
+      content="Ritual Tweet Forge helps the Ritual community generate unique tweet ideas and save selected drafts on Ritual Testnet."
     />
-    <title>Ritual Agent Arena</title>
+    <title>Ritual Tweet Forge</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -24,12 +24,12 @@
         <span class="brand-mark">
           <img src="assets/ritual-logo.png" alt="" />
         </span>
-        <span>Ritual Agent Arena</span>
+        <span>Ritual Tweet Forge</span>
       </a>
       <nav class="nav-links" aria-label="Primary">
-        <a href="#arena">Arena</a>
-        <a href="#agents">Agents</a>
-        <a href="#leaderboard">Leaderboard</a>
+        <a href="#forge">Forge</a>
+        <a href="#why">Purpose</a>
+        <a href="#history">History</a>
         <a href="https://docs.ritualfoundation.org/" target="_blank" rel="noreferrer">Docs</a>
       </nav>
       <button class="wallet-button" id="connectWallet" type="button">
@@ -39,89 +39,73 @@
     </header>
 
     <main>
-      <section class="arena-shell" id="arena">
+      <section class="arena-shell" id="forge">
         <div class="command-panel">
           <div class="panel-kicker">
-            <span>Live simulation</span>
-            <strong>Chain ID 1979</strong>
+            <span>Community content tool</span>
+            <strong>Ritual Chain 1979</strong>
           </div>
-          <h1>Test your Ritual app idea before you build.</h1>
+          <h1>Never get stuck writing about Ritual again.</h1>
           <p class="intro">
-            Describe an app idea for Ritual, let specialized reviewers analyze it from different angles, then save the
-            result as a shareable testnet record.
+            Pick a topic, tone, and format. The forge creates unique Ritual tweet drafts so community members can post
+            without everyone sounding the same.
           </p>
-          <div class="hero-metrics" aria-label="Arena metrics">
-            <div>
-              <strong>5</strong>
-              <span>agent profiles</span>
-            </div>
-            <div>
-              <strong>4</strong>
-              <span>judge lenses</span>
-            </div>
-            <div>
-              <strong>1979</strong>
-              <span>Ritual chain</span>
-            </div>
-          </div>
 
           <div class="purpose-panel">
-            <strong>Simple purpose</strong>
+            <strong>What this is for</strong>
             <p>
-              This app helps builders and community members answer one question: is this idea worth building on Ritual?
-              The reviewers score the idea, explain the strongest direction, and let you save the result on Ritual Testnet.
+              Many people want to support Ritual but do not know what to tweet. This app gives them fresh tweet ideas,
+              hooks, and short threads. Each generation is mixed from many angles, so even a large community gets
+              different outputs.
             </p>
           </div>
 
-          <form class="battle-form" id="battleForm">
-            <label>
-              <span>Your Ritual app idea</span>
-              <textarea
-                id="challengeInput"
-                rows="4"
-                maxlength="420"
-                required
-                placeholder="Example: I want to build an AI auditor that reviews smart contracts and saves the risk score on Ritual Testnet."
-              ></textarea>
-            </label>
-            <div class="preset-row" id="presetRow" aria-label="Preset app idea prompts"></div>
-
+          <form class="battle-form" id="tweetForm">
             <div class="form-grid">
               <label>
-                <span>Reviewer A</span>
-                <select id="agentA"></select>
-              </label>
-              <label>
-                <span>Reviewer B</span>
-                <select id="agentB"></select>
-              </label>
-            </div>
-
-            <div class="form-grid">
-              <label>
-                <span>Review focus</span>
-                <select id="judgeMode">
-                  <option value="Product-market fit">Product-market fit</option>
-                  <option value="Technical depth">Technical depth</option>
-                  <option value="Community impact">Community impact</option>
-                  <option value="Ritual-native design">Ritual-native design</option>
+                <span>Topic</span>
+                <select id="topicSelect">
+                  <option value="Autonomous agents">Autonomous agents</option>
+                  <option value="Multi-agent evals">Multi-agent evals</option>
+                  <option value="Ritual Chain">Ritual Chain</option>
+                  <option value="Private AI">Private AI</option>
+                  <option value="Builder ecosystem">Builder ecosystem</option>
+                  <option value="Testnet activity">Testnet activity</option>
                 </select>
               </label>
               <label>
-                <span>Review depth</span>
-                <input id="intensity" type="range" min="1" max="5" value="4" />
+                <span>Tone</span>
+                <select id="toneSelect">
+                  <option value="clear">Clear and educational</option>
+                  <option value="hype">Hype but credible</option>
+                  <option value="builder">Builder-focused</option>
+                  <option value="curious">Curious question</option>
+                  <option value="thread">Mini thread</option>
+                </select>
               </label>
             </div>
 
+            <label>
+              <span>Your angle, optional</span>
+              <textarea
+                id="angleInput"
+                rows="4"
+                maxlength="260"
+                placeholder="Example: I want to explain why Ritual is interesting for AI agents that can act onchain."
+              ></textarea>
+            </label>
+
+            <div class="preset-row" id="presetRow" aria-label="Quick tweet angles"></div>
+
             <div class="action-row">
-              <button class="primary-action" type="submit">Review my idea</button>
+              <button class="primary-action" type="submit">Generate unique tweets</button>
               <button class="ghost-action" id="switchRitual" type="button">Add Ritual network</button>
             </div>
-            <p class="status-line" id="statusLine">Wallet is optional for reviewing. Connect only when you want to save the result on Ritual Testnet.</p>
+            <p class="status-line" id="statusLine">Generate tweets first. Connect wallet only if you want to save one draft on Ritual Testnet.</p>
           </form>
         </div>
 
-        <aside class="result-console" aria-label="Arena result console">
+        <aside class="result-console" aria-label="Tweet forge output">
           <div class="console-top">
             <span></span>
             <span></span>
@@ -129,110 +113,84 @@
           </div>
           <div class="console-header">
             <div>
-              <small>Current idea</small>
-              <strong id="matchTitle">Awaiting app idea</strong>
+              <small>Latest output</small>
+              <strong id="outputTitle">No tweets generated yet</strong>
             </div>
             <span id="networkStatus">Wallet idle</span>
           </div>
-          <div class="telemetry-grid" aria-label="Review telemetry">
+
+          <div class="telemetry-grid" aria-label="Tweet uniqueness metrics">
             <div>
-              <small>Persistence</small>
-              <strong id="persistenceMetric">--</strong>
+              <small>Variants</small>
+              <strong id="variantMetric">0</strong>
             </div>
             <div>
-              <small>Coordination</small>
-              <strong id="coordinationMetric">--</strong>
+              <small>Uniqueness seed</small>
+              <strong id="seedMetric">--</strong>
             </div>
             <div>
-              <small>Ritual fit</small>
-              <strong id="ritualFitMetric">--</strong>
+              <small>Characters</small>
+              <strong id="charMetric">--</strong>
             </div>
           </div>
 
-          <div class="agent-stage">
-            <article class="agent-card alpha">
-              <small>Reviewer A</small>
-              <h2 id="agentAName">Sovereign Strategist</h2>
-              <p id="agentAOutput">Enter an app idea to get the first review.</p>
-              <meter id="agentAScore" min="0" max="100" value="0"></meter>
-            </article>
-            <article class="agent-card sigma">
-              <small>Reviewer B</small>
-              <h2 id="agentBName">Mechanism Designer</h2>
-              <p id="agentBOutput">The judge will compare usefulness, execution, and Ritual relevance.</p>
-              <meter id="agentBScore" min="0" max="100" value="0"></meter>
+          <div class="tweet-output" id="tweetOutput">
+            <article class="empty-state">
+              <strong>Ready to forge</strong>
+              <span>Choose a topic and click generate. You will get several different tweet drafts.</span>
             </article>
           </div>
 
           <div class="judge-verdict">
-            <small>Final recommendation</small>
-            <strong id="winnerText">No winner yet</strong>
-            <p id="judgeReason">Submit an app idea to receive a clear build recommendation.</p>
+            <small>Selected draft</small>
+            <strong id="selectedTitle">Nothing selected</strong>
+            <p id="selectedTweet">Click a generated draft to select it, copy it, share it, or save it on Ritual Testnet.</p>
             <div class="verdict-actions">
-              <button class="share-link" id="anchorBattle" type="button">Save on Ritual</button>
-              <a class="share-link" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noreferrer">Share result</a>
+              <button class="share-link" id="copyTweet" type="button">Copy tweet</button>
+              <button class="share-link" id="anchorDraft" type="button">Save on Ritual</button>
+              <a class="share-link" id="shareX" href="https://x.com/intent/tweet" target="_blank" rel="noreferrer">Open in X</a>
             </div>
             <p class="anchor-note">
-              Saving sends a 0 RITUAL transaction to your own wallet with the review memo in tx data. It only uses
-              Ritual testnet gas. If your wallet says simulation is unavailable, review the details and continue only
-              if the chain, sender, and 0 value are correct.
+              Saving sends a 0 RITUAL transaction to your own wallet with a short memo of the selected draft. It only
+              uses Ritual testnet gas.
             </p>
             <a class="tx-link" id="txLink" href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">No Ritual transaction yet</a>
-          </div>
-          <div class="battle-timeline" id="battleTimeline" aria-label="Review timeline">
-            <span>Idea queued</span>
-            <span>Reviewers idle</span>
-            <span>Recommendation engine ready</span>
           </div>
         </aside>
       </section>
 
-      <section class="signal-band" aria-label="Ritual capabilities">
+      <section class="signal-band" id="why" aria-label="Why this helps the Ritual community">
         <article>
-          <span>Think</span>
-          <h2>Idea review</h2>
-          <p>Turn a rough Ritual app idea into a structured recommendation.</p>
+          <span>01</span>
+          <h2>Easy content</h2>
+          <p>Community members get tweet drafts instantly instead of staring at a blank composer.</p>
         </article>
         <article>
-          <span>Act</span>
-          <h2>Testnet proof</h2>
-          <p>Save the review result with a small Ritual Testnet transaction.</p>
+          <span>02</span>
+          <h2>Not copy-paste spam</h2>
+          <p>The generator mixes hooks, topics, formats, CTAs, and random seeds so outputs vary heavily.</p>
         </article>
         <article>
-          <span>Persist</span>
-          <h2>Builder signal</h2>
-          <p>Keep a local history of reviewed ideas, scores, and recommendations.</p>
+          <span>03</span>
+          <h2>Testnet action</h2>
+          <p>Users can save a favorite draft on Ritual Testnet, creating a real wallet interaction.</p>
         </article>
       </section>
 
-      <section class="agents-section" id="agents">
+      <section class="records-section" id="history">
         <div class="section-heading">
           <div>
-            <p class="eyebrow">Agent roster</p>
-            <h2>Specialized reviewers for Ritual app ideas</h2>
+            <p class="eyebrow">Local history</p>
+            <h2>Recent forged tweets</h2>
           </div>
+          <button class="ghost-action compact" id="generateDemo" type="button">Generate demo set</button>
         </div>
-        <div class="agent-roster" id="agentRoster"></div>
-      </section>
-
-      <section class="records-section" id="leaderboard">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Arena records</p>
-            <h2>Reviewed ideas and top agents</h2>
-          </div>
-          <button class="ghost-action compact" id="seedBattle" type="button">Generate demo review</button>
-        </div>
-
-        <div class="records-grid">
-          <div class="leaderboard" id="leaderboardList"></div>
-          <div class="battle-history" id="battleHistory"></div>
-        </div>
+        <div class="battle-history" id="tweetHistory"></div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <span>Built to review Ritual app ideas and save results on testnet.</span>
+      <span>Built for Ritual community content and testnet activity.</span>
       <a href="https://ritual.net/" target="_blank" rel="noreferrer">Ritual</a>
       <a href="https://docs.ritualfoundation.org/" target="_blank" rel="noreferrer">Docs</a>
       <a href="https://explorer.ritualfoundation.org/" target="_blank" rel="noreferrer">Explorer</a>

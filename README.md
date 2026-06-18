@@ -1,18 +1,17 @@
-# Ritual Idea Review Arena
+# Ritual Tweet Forge
 
-Premium static web app for reviewing Ritual app ideas with specialized AI-style agents and saving results on Ritual Testnet.
+Premium static web app for generating unique Ritual tweet drafts and saving selected drafts on Ritual Testnet.
 
 ## Features
 
-- Ritual app idea reviewer with judge verdicts
-- Clear community purpose section for builders and reviewers
-- Premium first-screen arena interface with preset challenge prompts
-- Review telemetry for persistence, coordination, and Ritual fit
-- Agent roster section with Ritual-native roles and strengths
-- Local review history and leaderboard
+- Ritual tweet draft generator for community members
+- Topic, tone, and custom angle controls
+- Five unique drafts per generation
+- Copy-to-clipboard and X share flow
+- Local tweet draft history
 - Ritual Testnet wallet helper using Chain ID `1979`
 - EVM wallet selector for OKX Wallet, MetaMask, Rabby, Coinbase, Brave, Trust, and EIP-6963 wallets
-- Optional review-saving transaction on Ritual Testnet, paid with testnet gas
+- Optional draft-saving transaction on Ritual Testnet, paid with testnet gas
 - Official Ritual links for docs, explorer, faucet, and website
 - No framework or backend required, ready for Vercel static deploy
 
@@ -42,4 +41,4 @@ and serves the `dist` directory.
 
 ## Upgrade Path
 
-The current app is frontend-only so it can ship quickly. Next upgrades can connect reviews to an API, save records in Supabase, or replace the deterministic simulator with Ritual LLM / agent precompile calls when you are ready.
+The current app is frontend-only so it can ship quickly. Next upgrades can connect generations to an API, save records in Supabase, or replace the local generator with Ritual LLM / agent precompile calls when you are ready.
