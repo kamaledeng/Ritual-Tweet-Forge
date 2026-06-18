@@ -832,6 +832,131 @@ meter::-webkit-meter-optimum-value {
   color: var(--text);
 }
 
+.wallet-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+}
+
+.wallet-modal.active {
+  display: flex;
+}
+
+.wallet-modal-card {
+  width: min(430px, 100%);
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-strong);
+  box-shadow: var(--shadow);
+}
+
+.wallet-modal-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.wallet-modal-heading small {
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.wallet-modal-heading strong {
+  display: block;
+  margin-top: 6px;
+  font-family: "Space Grotesk", Inter, sans-serif;
+  font-size: 28px;
+}
+
+.wallet-modal-heading button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+}
+
+.wallet-list {
+  display: grid;
+  gap: 10px;
+}
+
+.wallet-option {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+  cursor: pointer;
+  text-align: left;
+}
+
+.wallet-option:hover {
+  border-color: rgba(114, 241, 181, 0.5);
+}
+
+.wallet-option > span {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(114, 241, 181, 0.12);
+  color: var(--green);
+  font-weight: 900;
+}
+
+.wallet-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.wallet-option strong,
+.wallet-empty strong {
+  display: block;
+}
+
+.wallet-option small,
+.wallet-empty span,
+.wallet-modal-card p {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.wallet-modal-card p {
+  margin: 14px 0 0;
+}
+
+.wallet-empty {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
 .processing .agent-card {
   animation: pulsePanel 760ms ease-in-out infinite alternate;
 }

@@ -76,6 +76,9 @@ const presetChallenges = [
 
 let walletAddress = "";
 let lastBattle = null;
+let selectedProvider = null;
+let selectedWalletName = "";
+let discoveredWallets = [];
 
 const elements = {
   form: document.querySelector("#battleForm"),
@@ -86,6 +89,9 @@ const elements = {
   intensity: document.querySelector("#intensity"),
   connectWallet: document.querySelector("#connectWallet"),
   walletLabel: document.querySelector("#walletLabel"),
+  walletModal: document.querySelector("#walletModal"),
+  walletList: document.querySelector("#walletList"),
+  closeWalletModal: document.querySelector("#closeWalletModal"),
   switchRitual: document.querySelector("#switchRitual"),
   statusLine: document.querySelector("#statusLine"),
   networkStatus: document.querySelector("#networkStatus"),
@@ -114,7 +120,96 @@ const elements = {
 };
 
 function getProvider() {
-  return window.ethereum;
+  return selectedProvider || getDefaultProvider();
+}
+
+function getDefaultProvider() {
+  return discoveredWallets[0]?.provider || window.ethereum;
+}
+
+function walletIdentity(provider, fallbackName = "Injected Wallet") {
+  if (!provider) return fallbackName;
+  if (provider.isOkxWallet || provider.isOKExWallet) return "OKX Wallet";
+  if (provider.isRabby) return "Rabby";
+  if (provider.isCoinbaseWallet) return "Coinbase Wallet";
+  if (provider.isTrust) return "Trust Wallet";
+  if (provider.isBraveWallet) return "Brave Wallet";
+  if (provider.isMetaMask) return "MetaMask";
+  return fallbackName;
+}
+
+function walletIcon(name) {
+  return name
+    .split(/\s+/)
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+function registerWallet(wallet) {
+  if (!wallet?.provider) return;
+
+  const alreadyRegistered = discoveredWallets.some((item) => item.provider === wallet.provider || item.id === wallet.id);
+  if (alreadyRegistered) return;
+
+  discoveredWallets.push({
+    id: wallet.id || wallet.info?.uuid || walletIdentity(wallet.provider),
+    name: wallet.name || wallet.info?.name || walletIdentity(wallet.provider),
+    icon: wallet.info?.icon || "",
+    provider: wallet.provider
+  });
+}
+
+function discoverInjectedWallets() {
+  const ethereum = window.ethereum;
+  if (!ethereum) return;
+
+  const providers = Array.isArray(ethereum.providers) ? ethereum.providers : [ethereum];
+  providers.forEach((provider, index) => {
+    const name = walletIdentity(provider, index === 0 ? "Browser Wallet" : `Wallet ${index + 1}`);
+    registerWallet({
+      id: `${name}-${index}`,
+      name,
+      provider
+    });
+  });
+}
+
+function renderWalletList() {
+  discoverInjectedWallets();
+
+  elements.walletList.innerHTML = discoveredWallets.length
+    ? discoveredWallets.map((wallet, index) => `
+      <button class="wallet-option" type="button" data-wallet-index="${index}">
+        <span>${wallet.icon ? `<img src="${escapeHtml(wallet.icon)}" alt="" />` : escapeHtml(walletIcon(wallet.name))}</span>
+        <div>
+          <strong>${escapeHtml(wallet.name)}</strong>
+          <small>${selectedProvider === wallet.provider ? "Selected" : "Injected EVM provider"}</small>
+        </div>
+      </button>
+    `).join("")
+    : `<div class="wallet-empty"><strong>No EVM wallet detected</strong><span>Install OKX Wallet, MetaMask, Rabby, or open this app in a wallet browser.</span></div>`;
+}
+
+function openWalletModal() {
+  renderWalletList();
+  elements.walletModal.classList.add("active");
+  elements.walletModal.setAttribute("aria-hidden", "false");
+}
+
+function closeWalletModal() {
+  elements.walletModal.classList.remove("active");
+  elements.walletModal.setAttribute("aria-hidden", "true");
+}
+
+function attachProviderListeners(provider) {
+  provider.on?.("chainChanged", refreshNetwork);
+  provider.on?.("accountsChanged", (accounts) => {
+    walletAddress = accounts[0] || "";
+    elements.connectWallet.classList.toggle("connected", Boolean(walletAddress));
+    elements.walletLabel.textContent = walletAddress ? shortAddress(walletAddress) : "Connect wallet";
+  });
 }
 
 function shortAddress(address) {
@@ -411,9 +506,23 @@ function renderRecords() {
 }
 
 async function connectWallet() {
+  discoverInjectedWallets();
+
+  if (!selectedProvider && discoveredWallets.length > 1) {
+    openWalletModal();
+    elements.statusLine.textContent = "Choose an EVM wallet first, then connect to Ritual Testnet.";
+    return;
+  }
+
+  if (!selectedProvider && discoveredWallets.length === 1) {
+    selectedProvider = discoveredWallets[0].provider;
+    selectedWalletName = discoveredWallets[0].name;
+  }
+
   const provider = getProvider();
   if (!provider) {
-    elements.statusLine.textContent = "Wallet not detected. Open with MetaMask, Rabby, or another injected wallet.";
+    openWalletModal();
+    elements.statusLine.textContent = "Wallet not detected. Open with OKX Wallet, MetaMask, Rabby, or another injected EVM wallet.";
     return;
   }
 
@@ -423,7 +532,8 @@ async function connectWallet() {
 
   elements.connectWallet.classList.add("connected");
   elements.walletLabel.textContent = shortAddress(walletAddress);
-  elements.statusLine.textContent = "Wallet connected. New arena records will include your address preview.";
+  elements.statusLine.textContent = `${selectedWalletName || walletIdentity(provider)} connected. New arena records will include your address preview.`;
+  attachProviderListeners(provider);
   await refreshNetwork();
 }
 
@@ -536,6 +646,22 @@ elements.form.addEventListener("submit", (event) => {
 });
 
 elements.connectWallet.addEventListener("click", connectWallet);
+elements.closeWalletModal.addEventListener("click", closeWalletModal);
+elements.walletModal.addEventListener("click", (event) => {
+  if (event.target === elements.walletModal) closeWalletModal();
+});
+elements.walletList.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-wallet-index]");
+  if (!button) return;
+
+  const wallet = discoveredWallets[Number(button.dataset.walletIndex)];
+  if (!wallet) return;
+
+  selectedProvider = wallet.provider;
+  selectedWalletName = wallet.name;
+  closeWalletModal();
+  await connectWallet();
+});
 elements.switchRitual.addEventListener("click", async () => {
   try {
     await switchToRitual();
@@ -560,15 +686,18 @@ elements.presetRow.addEventListener("click", (event) => {
   elements.challengeInput.focus();
 });
 
-if (getProvider()) {
-  getProvider().on?.("chainChanged", refreshNetwork);
-  getProvider().on?.("accountsChanged", (accounts) => {
-    walletAddress = accounts[0] || "";
-    elements.connectWallet.classList.toggle("connected", Boolean(walletAddress));
-    elements.walletLabel.textContent = walletAddress ? shortAddress(walletAddress) : "Connect wallet";
+window.addEventListener("eip6963:announceProvider", (event) => {
+  registerWallet({
+    id: event.detail?.info?.uuid,
+    name: event.detail?.info?.name,
+    info: event.detail?.info,
+    provider: event.detail?.provider
   });
-  refreshNetwork();
-}
+});
+
+window.dispatchEvent(new Event("eip6963:requestProvider"));
+discoverInjectedWallets();
+if (getProvider()) refreshNetwork();
 
 populateAgents();
 renderPresetChallenges();

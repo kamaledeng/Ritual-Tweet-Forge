@@ -11,6 +11,7 @@ Premium static web app for a Ritual-native multi-agent battle experience.
 - Agent roster section with Ritual-native roles and strengths
 - Local battle history and leaderboard
 - Ritual Testnet wallet helper using Chain ID `1979`
+- EVM wallet selector for OKX Wallet, MetaMask, Rabby, Coinbase, Brave, Trust, and EIP-6963 wallets
 - Optional battle anchoring transaction on Ritual Testnet, paid with testnet gas
 - Official Ritual links for docs, explorer, faucet, and website
 - No framework or backend required, ready for Vercel static deploy
