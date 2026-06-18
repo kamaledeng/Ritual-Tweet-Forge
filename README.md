@@ -16,6 +16,8 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Copy feedback with button state, card flash, and toast confirmation
 - Copy-to-clipboard buttons and X share flow
 - Advanced AI image prompt builder with ratio, style, scene, and prompt mode controls
+- Required Ritual Testnet gas transaction before each image prompt build
+- Prompt state indicator when image settings or selected tweet need a rebuild
 - Ratio options: 1:1, 16:9, 4:5, 9:16, and 3:2
 - Copyable image prompts based on the selected tweet, topic, seed, and tx hash
 - Local tweet draft history

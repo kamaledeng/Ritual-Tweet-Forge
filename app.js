@@ -212,6 +212,7 @@ const elements = {
   imageScene: document.querySelector("#imageScene"),
   imagePromptMode: document.querySelector("#imagePromptMode"),
   imagePrompt: document.querySelector("#imagePrompt"),
+  promptState: document.querySelector("#promptState"),
   generateImagePrompt: document.querySelector("#generateImagePrompt"),
   copyImagePrompt: document.querySelector("#copyImagePrompt"),
   tweetHistory: document.querySelector("#tweetHistory"),
@@ -514,7 +515,6 @@ function generateDrafts(txHash = "") {
   }));
 
   latestDrafts = drafts;
-  selectedDraft = drafts[0];
   renderDrafts(drafts);
   selectDraft(drafts[0]);
   saveHistory(drafts);
@@ -541,12 +541,14 @@ function renderDrafts(drafts) {
 }
 
 function selectDraft(draft) {
+  const previousDraftId = selectedDraft?.id;
   selectedDraft = draft;
   elements.selectedTitle.textContent = `${draft.topic} draft`;
   elements.selectedTweet.textContent = draft.text;
   elements.charMetric.textContent = String(draft.text.length);
   elements.shareX.href = `https://x.com/intent/tweet?${new URLSearchParams({ text: draft.text }).toString()}`;
   renderDrafts(latestDrafts);
+  if (previousDraftId && previousDraftId !== draft.id) markImagePromptStale();
 }
 
 function showCopyFeedback(button, card) {
@@ -641,6 +643,20 @@ function buildGenerateMemo() {
   });
 }
 
+function buildImagePromptMemo() {
+  return JSON.stringify({
+    app: "Ritual Tweet Forge",
+    action: "build-image-prompt",
+    draftId: selectedDraft?.id || "",
+    topic: selectedDraft?.topic || elements.topicSelect.value,
+    ratio: elements.imageRatio.value,
+    style: elements.imageStyle.value,
+    scene: elements.imageScene.value,
+    mode: elements.imagePromptMode.value,
+    createdAt: new Date().toISOString()
+  });
+}
+
 const imageStyles = {
   whiteboard: "hand-drawn whiteboard, black and white, rough marker lines, clean background, simple labels",
   pencil: "hand-drawn pencil sketch, black and white, rough pencil lines, light paper texture, clean composition",
@@ -693,7 +709,16 @@ function buildImagePrompt() {
 
   elements.imagePrompt.value = prompt;
   elements.statusLine.textContent = "Image prompt built. Copy it into your preferred AI image generator.";
+  elements.promptState.textContent = "Built";
+  elements.promptState.classList.remove("stale");
   return prompt;
+}
+
+function markImagePromptStale() {
+  if (!elements.imagePrompt.value.trim()) return;
+  elements.promptState.textContent = "Needs rebuild";
+  elements.promptState.classList.add("stale");
+  elements.statusLine.textContent = "Image prompt settings changed. Click Build prompt with Ritual fee to update it.";
 }
 
 async function connectWallet() {
@@ -791,6 +816,51 @@ async function payGenerationFee() {
       data: stringToHex(buildGenerateMemo())
     }]
   });
+}
+
+async function payImagePromptFee() {
+  const provider = getProvider();
+  if (!provider) {
+    elements.statusLine.textContent = "Choose an EVM wallet first. Building an image prompt requires Ritual testnet gas.";
+    openWalletModal();
+    return "";
+  }
+
+  if (!walletAddress) await connectWallet();
+  if (!walletAddress) return "";
+
+  elements.statusLine.textContent = "Confirm the Ritual Testnet transaction to build the image prompt. Value is 0 RITUAL; you only pay gas.";
+  await ensureRitualNetwork();
+
+  return provider.request({
+    method: "eth_sendTransaction",
+    params: [{
+      from: walletAddress,
+      to: walletAddress,
+      value: "0x0",
+      data: stringToHex(buildImagePromptMemo())
+    }]
+  });
+}
+
+async function buildImagePromptWithFee() {
+  if (!selectedDraft) {
+    elements.statusLine.textContent = "Select a tweet first, then build the image prompt.";
+    return;
+  }
+
+  try {
+    const txHash = await payImagePromptFee();
+    if (!txHash) return;
+    elements.txLink.href = `${ritualChain.blockExplorerUrls[0]}/tx/${txHash}`;
+    elements.txLink.textContent = `Prompt tx: ${txHash.slice(0, 10)}...${txHash.slice(-8)}`;
+    buildImagePrompt();
+  } catch (error) {
+    const message = String(error?.message || "").toLowerCase();
+    elements.statusLine.textContent = message.includes("insufficient")
+      ? "Prompt build failed. Get Ritual testnet tokens from the faucet, then try again."
+      : "Prompt build cancelled or failed. Check wallet approval and Ritual Testnet.";
+  }
 }
 
 async function anchorSelectedDraft() {
@@ -913,12 +983,19 @@ elements.tweetOutput.addEventListener("click", (event) => {
 
 elements.copyTweet.addEventListener("click", copySelectedTweet);
 elements.anchorDraft.addEventListener("click", anchorSelectedDraft);
-elements.generateImagePrompt.addEventListener("click", buildImagePrompt);
+elements.generateImagePrompt.addEventListener("click", buildImagePromptWithFee);
 elements.copyImagePrompt.addEventListener("click", async () => {
-  const prompt = elements.imagePrompt.value || buildImagePrompt();
-  if (!prompt) return;
+  const prompt = elements.imagePrompt.value;
+  if (!prompt) {
+    elements.statusLine.textContent = "Build the image prompt first. Prompt build requires a Ritual fee transaction.";
+    return;
+  }
   await copyTweetText(prompt, elements.copyImagePrompt);
 });
+elements.imageRatio.addEventListener("change", markImagePromptStale);
+elements.imageStyle.addEventListener("change", markImagePromptStale);
+elements.imageScene.addEventListener("change", markImagePromptStale);
+elements.imagePromptMode.addEventListener("change", markImagePromptStale);
 elements.generateDemo.addEventListener("click", () => {
   elements.angleInput.value = pick(quickAngles);
   elements.statusLine.textContent = "Angle randomized. Click generate and confirm the Ritual fee transaction.";

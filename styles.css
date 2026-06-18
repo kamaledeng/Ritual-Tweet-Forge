@@ -1068,6 +1068,7 @@ meter::-webkit-meter-optimum-value {
 
 .image-lab-heading {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 14px;
 }
@@ -1084,6 +1085,21 @@ meter::-webkit-meter-optimum-value {
   margin-top: 6px;
   font-family: "Space Grotesk", Inter, sans-serif;
   font-size: 22px;
+}
+
+.prompt-state {
+  flex: 0 0 auto;
+  padding: 7px 10px;
+  border: 1px solid rgba(114, 241, 181, 0.34);
+  border-radius: 999px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.prompt-state.stale {
+  border-color: rgba(245, 189, 81, 0.45);
+  color: var(--gold);
 }
 
 .image-controls {
