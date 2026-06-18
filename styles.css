@@ -1092,12 +1092,14 @@ meter::-webkit-meter-optimum-value {
   gap: 12px;
 }
 
-#imageCanvas {
+#imagePrompt {
   width: 100%;
-  aspect-ratio: 1;
+  min-height: 210px;
   border: 1px solid var(--line);
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.2);
+  color: var(--text);
+  resize: vertical;
 }
 
 .processing .agent-card {

@@ -236,33 +236,41 @@
           <div class="image-lab">
             <div class="image-lab-heading">
               <div>
-                <small>Visual card</small>
-                <strong>Generate image for selected tweet</strong>
+                <small>Image prompt</small>
+                <strong>Build a prompt for your AI image tool</strong>
               </div>
             </div>
             <div class="image-controls">
               <label>
-                <span>Ratio</span>
-                <select id="imageRatio">
-                  <option value="square">Square 1:1</option>
-                  <option value="landscape">Landscape 16:9</option>
-                  <option value="portrait">Portrait 4:5</option>
+                <span>Visual style</span>
+                <select id="imageStyle">
+                  <option value="whiteboard">Hand-drawn whiteboard</option>
+                  <option value="pencil">Hand-drawn pencil sketch</option>
+                  <option value="sketchnote">Whiteboard sketchnote</option>
+                  <option value="meeting">Group meeting discussion</option>
+                  <option value="protocol">Dark mode protocol diagram</option>
+                  <option value="flow">Async execution flow</option>
+                  <option value="ui">Minimal technical UI</option>
+                  <option value="comic">Simple educational comic</option>
                 </select>
               </label>
               <label>
-                <span>Style</span>
-                <select id="imageStyle">
-                  <option value="editorial">Editorial</option>
-                  <option value="cyber">Cyber</option>
-                  <option value="minimal">Minimal</option>
-                  <option value="terminal">Terminal</option>
+                <span>Scene detail</span>
+                <select id="imageScene">
+                  <option value="context">Match tweet context</option>
+                  <option value="agents">Smart contract to validator to executor</option>
+                  <option value="timeline">Block timeline and async execution</option>
+                  <option value="bubbles">Speech bubbles and community discussion</option>
+                  <option value="docs">Protocol documentation diagram</option>
+                  <option value="abstract">Abstract AI x crypto concept</option>
                 </select>
               </label>
             </div>
-            <canvas id="imageCanvas" width="1080" height="1080" aria-label="Generated tweet image preview"></canvas>
+            <textarea id="imagePrompt" rows="7" readonly placeholder="Select a tweet, then build an image prompt."></textarea>
             <div class="verdict-actions">
-              <button class="share-link" id="generateImage" type="button">Generate image</button>
-              <button class="share-link" id="downloadImage" type="button">Download PNG</button>
+              <button class="share-link" id="generateImagePrompt" type="button">Build image prompt</button>
+              <button class="share-link" id="copyImagePrompt" type="button">Copy prompt</button>
+              <a class="share-link" href="https://chatgpt.com/" target="_blank" rel="noreferrer">Open image AI</a>
             </div>
           </div>
         </aside>

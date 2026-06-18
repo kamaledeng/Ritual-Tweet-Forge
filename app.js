@@ -207,11 +207,11 @@ const elements = {
   anchorDraft: document.querySelector("#anchorDraft"),
   shareX: document.querySelector("#shareX"),
   txLink: document.querySelector("#txLink"),
-  imageRatio: document.querySelector("#imageRatio"),
   imageStyle: document.querySelector("#imageStyle"),
-  imageCanvas: document.querySelector("#imageCanvas"),
-  generateImage: document.querySelector("#generateImage"),
-  downloadImage: document.querySelector("#downloadImage"),
+  imageScene: document.querySelector("#imageScene"),
+  imagePrompt: document.querySelector("#imagePrompt"),
+  generateImagePrompt: document.querySelector("#generateImagePrompt"),
+  copyImagePrompt: document.querySelector("#copyImagePrompt"),
   tweetHistory: document.querySelector("#tweetHistory"),
   generateDemo: document.querySelector("#generateDemo"),
   variantMetric: document.querySelector("#variantMetric"),
@@ -639,145 +639,50 @@ function buildGenerateMemo() {
   });
 }
 
-function wrapCanvasText(context, text, x, y, maxWidth, lineHeight, maxLines = 12) {
-  const paragraphs = text.split("\n").filter((line) => line.trim() !== "");
-  const lines = [];
+const imageStyles = {
+  whiteboard: "hand-drawn whiteboard, black and white, rough marker lines, clean background, simple labels",
+  pencil: "hand-drawn pencil sketch, black and white, rough pencil lines, light paper texture, clean composition",
+  sketchnote: "whiteboard sketchnote style, speech bubbles, arrows, simple icons, clean background",
+  meeting: "group meeting discussion, people around a table, speech bubbles, whiteboard in background, rough sketch style",
+  protocol: "dark mode protocol documentation diagram, neon green accent, minimal technical UI, clean labels",
+  flow: "async execution flow, smart contract to validator to executor, block timeline, neon green accent",
+  ui: "minimal technical UI, dark mode dashboard, network nodes, transaction card, clean spacing",
+  comic: "simple educational comic, 3 panels, friendly characters, speech bubbles, clean background"
+};
 
-  paragraphs.forEach((paragraph) => {
-    const words = paragraph.split(" ");
-    let line = "";
-    words.forEach((word) => {
-      const testLine = line ? `${line} ${word}` : word;
-      if (context.measureText(testLine).width > maxWidth && line) {
-        lines.push(line);
-        line = word;
-      } else {
-        line = testLine;
-      }
-    });
-    if (line) lines.push(line);
-  });
+const imageScenes = {
+  context: "visual should match the selected tweet topic and message",
+  agents: "show a smart contract sending work to a validator, then to an executor, then returning a result",
+  timeline: "show a block timeline with async execution steps, transaction hash, and completion checkpoint",
+  bubbles: "show community members discussing Ritual with speech bubbles and simple idea sketches",
+  docs: "show a protocol documentation diagram with labeled modules and arrows",
+  abstract: "show an abstract AI x crypto concept with agents, blocks, and subtle network geometry"
+};
 
-  lines.slice(0, maxLines).forEach((line, index) => {
-    context.fillText(line, x, y + index * lineHeight);
-  });
-
-  return Math.min(lines.length, maxLines) * lineHeight;
-}
-
-function getImageSize() {
-  if (elements.imageRatio.value === "landscape") return { width: 1600, height: 900 };
-  if (elements.imageRatio.value === "portrait") return { width: 1080, height: 1350 };
-  return { width: 1080, height: 1080 };
-}
-
-function drawTopicMotif(context, topic, width, height, style) {
-  context.save();
-  context.globalAlpha = style === "minimal" ? 0.22 : 0.36;
-  context.strokeStyle = style === "cyber" ? "#72f1b5" : "#f5bd51";
-  context.lineWidth = 3;
-
-  if (topic === "Private AI") {
-    context.strokeRect(width - 280, 120, 110, 130);
-    context.beginPath();
-    context.arc(width - 225, 120, 42, Math.PI, 0);
-    context.stroke();
-  } else if (topic === "Ritual Chain" || topic === "Testnet activity") {
-    for (let i = 0; i < 7; i += 1) {
-      context.strokeRect(width - 360 + i * 34, 130 + i * 24, 120, 42);
-    }
-  } else if (topic === "Builder ecosystem") {
-    for (let i = 0; i < 5; i += 1) {
-      context.strokeRect(width - 360 + i * 46, 160, 38, 38);
-      context.strokeRect(width - 330 + i * 46, 220, 38, 38);
-    }
-  } else {
-    const points = [[width - 310, 150], [width - 170, 210], [width - 280, 320], [width - 105, 360], [width - 380, 280]];
-    points.forEach(([x, y], index) => {
-      context.beginPath();
-      context.arc(x, y, 14, 0, Math.PI * 2);
-      context.stroke();
-      if (index > 0) {
-        context.beginPath();
-        context.moveTo(points[index - 1][0], points[index - 1][1]);
-        context.lineTo(x, y);
-        context.stroke();
-      }
-    });
-  }
-
-  context.restore();
-}
-
-function generateTweetImage() {
+function buildImagePrompt() {
   if (!selectedDraft) {
-    elements.statusLine.textContent = "Select a tweet first, then generate the image.";
-    return;
+    elements.statusLine.textContent = "Select a tweet first, then build the image prompt.";
+    return "";
   }
 
-  const { width, height } = getImageSize();
-  const canvas = elements.imageCanvas;
-  const context = canvas.getContext("2d");
-  const style = elements.imageStyle.value;
-  canvas.width = width;
-  canvas.height = height;
+  const prompt = [
+    `Create an image to accompany this tweet about ${selectedDraft.topic}:`,
+    `"${selectedDraft.text}"`,
+    "",
+    `Style: ${imageStyles[elements.imageStyle.value]}.`,
+    `Scene: ${imageScenes[elements.imageScene.value]}.`,
+    "Make the image match the tweet context, not a generic crypto poster.",
+    "Do not include long readable text, logos, watermarks, fake UI brand names, or distorted typography.",
+    "Use clear composition, strong focal point, and enough empty space for social media cropping.",
+    "If showing protocol flow, use simple arrows, blocks, nodes, validators, executors, and transaction timeline elements.",
+    "Mood: premium, thoughtful, technical but approachable.",
+    "Color guidance: use Ritual-inspired neon green as a subtle accent, unless the selected style is black and white.",
+    selectedDraft.txHash ? `Optional tiny detail: include a subtle transaction hash motif inspired by ${selectedDraft.txHash.slice(0, 10)}...${selectedDraft.txHash.slice(-8)}.` : ""
+  ].filter(Boolean).join("\n");
 
-  const gradients = {
-    editorial: ["#08110d", "#17201a", "#f5bd51"],
-    cyber: ["#031413", "#071c21", "#72f1b5"],
-    minimal: ["#f4f1e8", "#d9d8cf", "#111"],
-    terminal: ["#030605", "#07100d", "#72f1b5"]
-  };
-  const [start, end, accent] = gradients[style];
-
-  const gradient = context.createLinearGradient(0, 0, width, height);
-  gradient.addColorStop(0, start);
-  gradient.addColorStop(1, end);
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, width, height);
-
-  context.fillStyle = style === "minimal" ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.045)";
-  for (let x = 0; x < width; x += 56) context.fillRect(x, 0, 1, height);
-  for (let y = 0; y < height; y += 56) context.fillRect(0, y, width, 1);
-
-  drawTopicMotif(context, selectedDraft.topic, width, height, style);
-
-  const pad = Math.round(width * 0.075);
-  const textColor = style === "minimal" ? "#111" : "#f8f4e9";
-  const mutedColor = style === "minimal" ? "#4b4b43" : "#aaa99f";
-  context.fillStyle = accent;
-  context.font = `800 ${Math.round(width * 0.026)}px Inter, sans-serif`;
-  context.fillText("Ritual Tweet Forge", pad, pad);
-  context.fillStyle = mutedColor;
-  context.font = `700 ${Math.round(width * 0.018)}px Inter, sans-serif`;
-  context.fillText(`${selectedDraft.topic} / ${selectedDraft.structure}`, pad, pad + 42);
-
-  context.fillStyle = textColor;
-  context.font = `800 ${Math.round(width * (height > width ? 0.046 : 0.04))}px Space Grotesk, Inter, sans-serif`;
-  const used = wrapCanvasText(context, selectedDraft.text, pad, Math.round(height * 0.26), width - pad * 2, Math.round(width * 0.056), height > width ? 12 : 9);
-
-  context.fillStyle = mutedColor;
-  context.font = `700 ${Math.round(width * 0.017)}px Inter, sans-serif`;
-  const footerY = Math.min(height - pad, Math.round(height * 0.26) + used + 70);
-  context.fillText("Generated for @ritualnet / @ritualfnd", pad, footerY);
-  if (selectedDraft.txHash) {
-    context.fillText(`tx ${selectedDraft.txHash.slice(0, 10)}...${selectedDraft.txHash.slice(-8)}`, pad, footerY + 34);
-  }
-
-  elements.statusLine.textContent = "Image card generated. Download it as PNG and attach it to your tweet.";
-}
-
-function downloadTweetImage() {
-  if (!selectedDraft) {
-    elements.statusLine.textContent = "Select a tweet and generate an image first.";
-    return;
-  }
-
-  generateTweetImage();
-  const link = document.createElement("a");
-  link.download = `ritual-tweet-${selectedDraft.seed.slice(-5)}.png`;
-  link.href = elements.imageCanvas.toDataURL("image/png");
-  link.click();
+  elements.imagePrompt.value = prompt;
+  elements.statusLine.textContent = "Image prompt built. Copy it into your preferred AI image generator.";
+  return prompt;
 }
 
 async function connectWallet() {
@@ -997,8 +902,12 @@ elements.tweetOutput.addEventListener("click", (event) => {
 
 elements.copyTweet.addEventListener("click", copySelectedTweet);
 elements.anchorDraft.addEventListener("click", anchorSelectedDraft);
-elements.generateImage.addEventListener("click", generateTweetImage);
-elements.downloadImage.addEventListener("click", downloadTweetImage);
+elements.generateImagePrompt.addEventListener("click", buildImagePrompt);
+elements.copyImagePrompt.addEventListener("click", async () => {
+  const prompt = elements.imagePrompt.value || buildImagePrompt();
+  if (!prompt) return;
+  await copyTweetText(prompt, elements.copyImagePrompt);
+});
 elements.generateDemo.addEventListener("click", () => {
   elements.angleInput.value = pick(quickAngles);
   elements.statusLine.textContent = "Angle randomized. Click generate and confirm the Ritual fee transaction.";
