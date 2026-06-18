@@ -12,7 +12,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Required Ritual Testnet gas transaction before each generation
 - Required mentions for `@ritualnet` and `@ritualfnd`
 - Casual human-sounding outputs with no visible structure labels
-- Mixed hook styles, natural endings, and hashtags that can appear mid-tweet or at the end
+- Mixed hook styles, natural endings, and mentions that can appear mid-tweet or at the end
 - Copy feedback with button state, card flash, and toast confirmation
 - Copy-to-clipboard buttons and X share flow
 - Local tweet draft history

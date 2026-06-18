@@ -131,8 +131,6 @@ const endings = [
   "the next few builder experiments should be fun"
 ];
 
-const hashtags = ["#Ritual", "#AI", "#CryptoAI", "#Web3", "#AutonomousAgents"];
-
 const threadOpeners = [
   "few quick thoughts on Ritual",
   "how I am thinking about Ritual rn",
@@ -235,20 +233,6 @@ function randomInt(max) {
 
 function pick(items) {
   return items[randomInt(items.length)];
-}
-
-function maybeHashtag(text, index) {
-  const first = pick(hashtags);
-  const second = pick(hashtags.filter((tag) => tag !== first));
-
-  if (index % 3 === 0) return `${text}\n\n${first} ${second}`;
-  if (index % 3 === 1) {
-    const parts = text.split("\n\n");
-    parts.splice(Math.min(1, parts.length), 0, first);
-    return parts.join("\n\n");
-  }
-
-  return text;
 }
 
 function pickHook() {
@@ -359,10 +343,36 @@ function trimTweet(text) {
   return `${text.slice(0, 270).trim()}...`;
 }
 
-function addMentions(text, mentionStyle) {
-  const mentions = mentionMap[mentionStyle] || mentionMap.both;
-  const withMentions = text.includes("@ritualnet") || text.includes("@ritualfnd") ? text : `${text}\n\n${mentions}`;
-  return trimTweet(withMentions);
+function getMentions(mentionStyle, index) {
+  if (mentionStyle === "net") return ["@ritualnet"];
+  if (mentionStyle === "fnd") return ["@ritualfnd"];
+  return index % 2 === 0 ? ["@ritualnet", "@ritualfnd"] : [pick(["@ritualnet", "@ritualfnd"])];
+}
+
+function injectMentions(text, mentionStyle, index) {
+  if (text.includes("@ritualnet") || text.includes("@ritualfnd")) return trimTweet(text);
+
+  const mentions = getMentions(mentionStyle, index);
+  let output = text;
+
+  if (mentions.includes("@ritualnet") && /\bRitual\b/.test(output) && index % 3 !== 2) {
+    output = output.replace(/\bRitual\b/, "@ritualnet");
+    if (mentions.includes("@ritualfnd")) {
+      const parts = output.split("\n\n");
+      parts.splice(Math.min(2, parts.length), 0, "@ritualfnd");
+      output = parts.join("\n\n");
+    }
+    return trimTweet(output);
+  }
+
+  const parts = output.split("\n\n");
+  if (index % 3 === 0) {
+    parts.splice(Math.min(1, parts.length), 0, mentions.join(" "));
+  } else {
+    parts.push(mentions.join(" "));
+  }
+
+  return trimTweet(parts.join("\n\n"));
 }
 
 function formatByLength(text, length) {
@@ -396,7 +406,7 @@ function buildTweet(topic, structure, tone, angle, index) {
   const close = cta ? `\n\n${cta}\n\n${ending}` : `\n\n${ending}`;
 
   if (structure === "thread" || tone === "thread" || length === "thread") {
-    return addMentions(maybeHashtag([
+    return injectMentions([
       pick(threadOpeners),
       "",
       `1/ ${hook}. ${claim}.`,
@@ -404,63 +414,63 @@ function buildTweet(topic, structure, tone, angle, index) {
       `2/ For ${noun}, the key is not just intelligence. It is execution, memory, and visible state.`,
       "",
       `3/ ${audienceLine}. ${bridge}${close}`,
-    ].join("\n"), index), mentionStyle);
+    ].join("\n"), mentionStyle, index);
   }
 
   let output = "";
 
   if (structure === "problem") {
     output = `${hook}:\n\nAI x crypto needs apps that feel useful, not just smart.\n\nRitual is interesting to me because ${claim}.\n\n${audienceLine}${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (structure === "contrast") {
     output = `${hook}:\n\nAI as a side feature is not that exciting to me.\n\nAI that can actually become part of the app flow is different.\n\nthat is why I keep coming back to ${noun} on Ritual${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (structure === "fact") {
     output = `${hook}:\n\nRitual is not interesting to me because it has AI branding.\n\nit is interesting because ${claim}.\n\n${bridge}${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (structure === "story") {
     output = `${hook}:\n\nimagine using an app where the agent does the work, leaves a record, and keeps getting better over time\n\nthat is the Ritual idea I keep thinking about: ${claim}.${personalAngle}${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (structure === "question") {
     output = `${hook}:\n\nwhat should apps look like when ${claim}?\n\nmy guess: the best Ritual apps will make ${noun} feel simple, not technical${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (structure === "builder") {
     output = `${hook}:\n\nif I were building around ${noun}, I would not lead with the infra\n\nI would lead with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (structure === "myth") {
     output = `${hook}:\n\nI do not see Ritual as just another AI narrative play.\n\nwhat makes it interesting is the chance to build apps where ${claim}.\n\nthat feels like a bigger design space for ${noun}${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (tone === "hype") {
     output = `${hook}\n\n${noun} make Ritual feel like more than another chain because ${claim}. ${bridge}${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (tone === "builder") {
     output = `if you are building around ${noun}, start from the user outcome first\n\nthen use Ritual for proof, memory, or action\n\n${bridge}${personalAngle}${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   if (tone === "curious") {
     output = `what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible${close}`;
-    return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+    return injectMentions(formatByLength(output, length), mentionStyle, index);
   }
 
   output = `${hook}:\n\n${claim}.\n\nthat is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}${close}`;
-  return addMentions(maybeHashtag(formatByLength(output, length), index), mentionStyle);
+  return injectMentions(formatByLength(output, length), mentionStyle, index);
 }
 
 function generateDrafts(txHash = "") {
