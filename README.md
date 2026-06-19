@@ -29,6 +29,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Local tweet draft history
 - Ritual Testnet wallet helper using Chain ID `1979`
 - EVM wallet selector for OKX Wallet, MetaMask, Rabby, Coinbase, Brave, Trust, and EIP-6963 wallets
+- Manual Ritual Testnet details are surfaced in wallet errors: Chain ID `1979`, RPC `https://rpc.ritualfoundation.org`, symbol `RITUAL`
 - Optional draft-saving transaction on Ritual Testnet, paid with testnet gas
 - Official Ritual links for docs, explorer, faucet, and website
 - No framework or backend required, ready for Vercel static deploy

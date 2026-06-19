@@ -10,6 +10,8 @@ const ritualChain = {
   blockExplorerUrls: ["https://explorer.ritualfoundation.org"]
 };
 
+const ritualNetworkHelp = "Manual network: Chain ID 1979, RPC https://rpc.ritualfoundation.org, Symbol RITUAL, Explorer https://explorer.ritualfoundation.org";
+
 const topics = {
   "Autonomous agents": {
     nouns: ["autonomous agents", "onchain agents", "agent-native apps", "persistent AI systems"],
@@ -479,6 +481,12 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function walletErrorMessage(error) {
+  const message = error?.data?.message || error?.message || "Unknown wallet error";
+  const code = error?.code ? `code ${error.code}` : "wallet error";
+  return `${code}: ${message}`;
 }
 
 function getProvider() {
@@ -1078,10 +1086,15 @@ async function switchToRitual() {
     });
   } catch (error) {
     if (error.code !== 4902) throw error;
-    await provider.request({
-      method: "wallet_addEthereumChain",
-      params: [ritualChain]
-    });
+    try {
+      await provider.request({
+        method: "wallet_addEthereumChain",
+        params: [ritualChain]
+      });
+    } catch (addError) {
+      elements.statusLine.textContent = `MetaMask could not add Ritual Testnet. ${walletErrorMessage(addError)}. ${ritualNetworkHelp}`;
+      throw addError;
+    }
   }
 
   await refreshNetwork();
@@ -1160,7 +1173,7 @@ async function buildImagePromptWithFee() {
     const message = String(error?.message || "").toLowerCase();
     elements.statusLine.textContent = message.includes("insufficient")
       ? "Prompt build failed. Get Ritual testnet tokens from the faucet, then try again."
-      : "Prompt build cancelled or failed. Check wallet approval and Ritual Testnet.";
+      : `Prompt build failed. ${walletErrorMessage(error)}. ${ritualNetworkHelp}`;
   }
 }
 
@@ -1200,7 +1213,7 @@ async function anchorSelectedDraft() {
     const message = String(error?.message || "").toLowerCase();
     elements.statusLine.textContent = message.includes("insufficient")
       ? "Transaction was not sent. Get Ritual testnet tokens from the faucet, then try again."
-      : "Transaction was not sent. Check wallet network, testnet balance, or user rejection.";
+      : `Transaction was not sent. ${walletErrorMessage(error)}. ${ritualNetworkHelp}`;
   }
 }
 
@@ -1256,7 +1269,7 @@ elements.form.addEventListener("submit", async (event) => {
     const message = String(error?.message || "").toLowerCase();
     elements.statusLine.textContent = message.includes("insufficient")
       ? "Generation failed. Get Ritual testnet tokens from the faucet, then try again."
-      : "Generation cancelled or failed. Check wallet approval and Ritual Testnet.";
+      : `Generation failed. ${walletErrorMessage(error)}. ${ritualNetworkHelp}`;
   }
 });
 
@@ -1332,8 +1345,8 @@ elements.walletList.addEventListener("click", async (event) => {
 elements.switchRitual.addEventListener("click", async () => {
   try {
     await switchToRitual();
-  } catch {
-    elements.statusLine.textContent = "Could not add or switch Ritual network. Check wallet permissions.";
+  } catch (error) {
+    elements.statusLine.textContent = `Could not add or switch Ritual network. ${walletErrorMessage(error)}. ${ritualNetworkHelp}`;
   }
 });
 
