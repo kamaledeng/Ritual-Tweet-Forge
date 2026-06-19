@@ -372,6 +372,7 @@ const elements = {
   mentionSelect: document.querySelector("#mentionSelect"),
   teamMentionSelect: document.querySelector("#teamMentionSelect"),
   hookSelect: document.querySelector("#hookSelect"),
+  uniquenessSelect: document.querySelector("#uniquenessSelect"),
   keywordSelect: document.querySelector("#keywordSelect"),
   keywordStyleSelect: document.querySelector("#keywordStyleSelect"),
   angleInput: document.querySelector("#angleInput"),
@@ -439,7 +440,23 @@ function resolveGenerationOptions() {
   const keyword = resolveChoice(elements.keywordSelect.value, generationOptions.keywords);
   const keywordStyle = resolveChoice(elements.keywordStyleSelect.value, generationOptions.keywordStyles);
 
-  return { topic, structure, tone, audience, length, cta, mention, teamMentions, hook, keyword, keywordStyle };
+  const uniqueness = elements.uniquenessSelect.value;
+
+  return { topic, structure, tone, audience, length, cta, mention, teamMentions, hook, keyword, keywordStyle, uniqueness };
+}
+
+function resolveVariantSettings(baseSettings) {
+  if (baseSettings.uniqueness !== "high") return baseSettings;
+
+  return {
+    ...baseSettings,
+    structure: elements.structureSelect.value === "auto" ? resolveChoice("auto", generationOptions.structures) : baseSettings.structure,
+    tone: elements.toneSelect.value === "auto" ? resolveChoice("auto", generationOptions.tones) : pick([baseSettings.tone, ...generationOptions.tones]),
+    length: elements.lengthSelect.value === "auto" ? resolveChoice("auto", generationOptions.lengths) : pick([baseSettings.length, "short", "medium", "long"]),
+    cta: elements.ctaSelect.value === "auto" ? resolveChoice("auto", generationOptions.ctas) : pick([baseSettings.cta, ...generationOptions.ctas]),
+    hook: elements.hookSelect.value === "auto" ? resolveChoice("auto", generationOptions.hooks) : pick([baseSettings.hook, ...generationOptions.hooks]),
+    keywordStyle: elements.keywordStyleSelect.value === "auto" ? resolveChoice("auto", generationOptions.keywordStyles) : pick([baseSettings.keywordStyle, ...generationOptions.keywordStyles])
+  };
 }
 
 function pickHook(style) {
@@ -541,7 +558,8 @@ function attachProviderListeners(provider) {
 }
 
 function buildSeed() {
-  return `${Date.now().toString(36)}-${randomInt(999999).toString(36)}`;
+  const walletSalt = walletAddress ? walletAddress.slice(2, 8).toLowerCase() : "guest";
+  return `${walletSalt}-${Date.now().toString(36)}-${performance.now().toString(36).replace(".", "")}-${randomInt(999999).toString(36)}`;
 }
 
 function trimTweet(text) {
@@ -754,32 +772,35 @@ function buildTweet(topic, structure, tone, angle, index, settings) {
 function generateDrafts(txHash = "") {
   const settings = resolveGenerationOptions();
   const topic = settings.topic;
-  const structure = settings.structure;
-  const tone = settings.tone;
   const angle = elements.angleInput.value.trim();
   const keywordKey = settings.keyword;
   const keywordLabel = keywordFocus[keywordKey]?.label || "No keyword focus";
   const seed = buildSeed();
-  const drafts = Array.from({ length: 5 }, (_, index) => ({
-    id: `${seed}-${index}`,
-    seed,
-    topic,
-    structure,
-    tone,
-    keyword: keywordLabel,
-    teamMentions: settings.teamMentions,
-    txHash,
-    text: buildTweet(topic, structure, tone, angle, index, settings),
-    createdAt: new Date().toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
-  }));
+  const drafts = Array.from({ length: 5 }, (_, index) => {
+    const variantSettings = resolveVariantSettings(settings);
+    return {
+      id: `${seed}-${index}`,
+      seed,
+      topic: variantSettings.topic,
+      structure: variantSettings.structure,
+      tone: variantSettings.tone,
+      keyword: keywordFocus[variantSettings.keyword]?.label || keywordLabel,
+      uniqueness: variantSettings.uniqueness,
+      teamMentions: variantSettings.teamMentions,
+      txHash,
+      text: buildTweet(variantSettings.topic, variantSettings.structure, variantSettings.tone, angle, index, variantSettings),
+      createdAt: new Date().toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
+    };
+  });
 
   latestDrafts = drafts;
   renderDrafts(drafts);
   selectDraft(drafts[0]);
   saveHistory(drafts);
   renderHistory();
+  const outputStructure = structureLabels[drafts[0].structure] || drafts[0].structure;
   elements.outputTitle.textContent = keywordKey === "none"
-    ? `${topic} / ${structureLabels[structure] || structure}`
+    ? `${topic} / ${outputStructure}`
     : `${topic} / ${keywordLabel}`;
   elements.variantMetric.textContent = String(drafts.length);
   elements.seedMetric.textContent = seed.slice(-5).toUpperCase();
@@ -856,7 +877,7 @@ function renderHistory() {
           <small>${escapeHtml(draft.createdAt)} / ${escapeHtml(draft.topic)}</small>
           <strong>${escapeHtml(draft.text)}</strong>
         </div>
-        <p>${escapeHtml(draft.tone)} tone / ${escapeHtml(draft.keyword || "No keyword focus")} / seed ${escapeHtml(draft.seed.slice(-5).toUpperCase())}</p>
+        <p>${escapeHtml(draft.tone)} tone / ${escapeHtml(draft.keyword || "No keyword focus")} / ${escapeHtml(draft.uniqueness || "balanced")} uniqueness / seed ${escapeHtml(draft.seed.slice(-5).toUpperCase())}</p>
       </article>
     `).join("")
     : `<article class="empty-state"><strong>No tweets forged yet</strong><span>Your generated drafts will appear here.</span></article>`;
@@ -903,6 +924,7 @@ function buildGenerateMemo() {
     mention: elements.mentionSelect.value,
     teamMentions: elements.teamMentionSelect.value,
     hook: elements.hookSelect.value,
+    uniqueness: elements.uniquenessSelect.value,
     createdAt: new Date().toISOString()
   });
 }
