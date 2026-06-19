@@ -545,8 +545,7 @@ function buildSeed() {
 }
 
 function trimTweet(text) {
-  if (text.length <= 275) return text;
-  return `${text.slice(0, 270).trim()}...`;
+  return text.trim();
 }
 
 function appendTeamMentions(text, teamMentionStyle) {
@@ -555,21 +554,25 @@ function appendTeamMentions(text, teamMentionStyle) {
   if (text.includes(teamMentions.split(" ")[0])) return text;
 
   const suffix = `\n\n${teamMentions}`;
-  const maxBaseLength = 275 - suffix.length;
-  const base = text.length > maxBaseLength ? `${text.slice(0, maxBaseLength - 3).trim()}...` : text;
-  return `${base}${suffix}`;
+  return `${text.trim()}${suffix}`;
 }
 
 function getMentions(mentionStyle, index) {
   if (mentionStyle === "net") return ["@ritualnet"];
   if (mentionStyle === "fnd") return ["@ritualfnd"];
-  return index % 2 === 0 ? ["@ritualnet", "@ritualfnd"] : [pick(["@ritualnet", "@ritualfnd"])];
+  return ["@ritualnet", "@ritualfnd"];
+}
+
+function ensureRequiredMentions(text, mentions) {
+  const missing = mentions.filter((mention) => !text.includes(mention));
+  if (!missing.length) return text;
+  return `${text.trim()}\n\n${missing.join(" ")}`;
 }
 
 function injectMentions(text, mentionStyle, index) {
-  if (text.includes("@ritualnet") || text.includes("@ritualfnd")) return trimTweet(text);
-
   const mentions = getMentions(mentionStyle, index);
+  if (mentions.every((mention) => text.includes(mention))) return trimTweet(text);
+
   let output = text;
 
   if (mentions.includes("@ritualnet") && index % 3 !== 2) {
@@ -595,7 +598,7 @@ function injectMentions(text, mentionStyle, index) {
       output = parts.join("\n\n");
     }
 
-    return trimTweet(output);
+    return trimTweet(ensureRequiredMentions(output, mentions));
   }
 
   const parts = output.split("\n\n");
@@ -605,7 +608,7 @@ function injectMentions(text, mentionStyle, index) {
     parts.push(mentions.join(" "));
   }
 
-  return trimTweet(parts.join("\n\n"));
+  return trimTweet(ensureRequiredMentions(parts.join("\n\n"), mentions));
 }
 
 function formatByLength(text, length) {
