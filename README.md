@@ -25,6 +25,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Prompt state indicator when image settings or selected tweet need a rebuild
 - Ratio options: 1:1, 16:9, 4:5, 9:16, and 3:2
 - Copyable image prompts based on the selected tweet, topic, seed, and tx hash
+- ChatGPT image prompt link that attempts to open the built prompt directly with a prefilled query
 - Local tweet draft history
 - Ritual Testnet wallet helper using Chain ID `1979`
 - EVM wallet selector for OKX Wallet, MetaMask, Rabby, Coinbase, Brave, Trust, and EIP-6963 wallets

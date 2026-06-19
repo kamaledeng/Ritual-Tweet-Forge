@@ -395,6 +395,7 @@ const elements = {
   promptState: document.querySelector("#promptState"),
   generateImagePrompt: document.querySelector("#generateImagePrompt"),
   copyImagePrompt: document.querySelector("#copyImagePrompt"),
+  openImageAI: document.querySelector("#openImageAI"),
   tweetHistory: document.querySelector("#tweetHistory"),
   generateDemo: document.querySelector("#generateDemo"),
   variantMetric: document.querySelector("#variantMetric"),
@@ -1008,6 +1009,7 @@ function buildImagePrompt() {
 
   elements.imagePrompt.value = prompt;
   elements.imagePrompt.scrollTop = 0;
+  elements.openImageAI.href = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
   elements.statusLine.textContent = "Image prompt built. Copy it into your preferred AI image generator.";
   elements.promptState.textContent = `Built ${buildId.slice(-4)}`;
   elements.promptState.classList.remove("stale");
@@ -1018,6 +1020,7 @@ function markImagePromptStale() {
   if (!elements.imagePrompt.value.trim()) return;
   elements.promptState.textContent = "Needs rebuild";
   elements.promptState.classList.add("stale");
+  elements.openImageAI.href = "https://chatgpt.com/";
   elements.statusLine.textContent = "Image prompt settings changed. Click Build prompt with Ritual fee to update it.";
 }
 
@@ -1291,6 +1294,11 @@ elements.copyImagePrompt.addEventListener("click", async () => {
     return;
   }
   await copyTweetText(prompt, elements.copyImagePrompt);
+});
+elements.openImageAI.addEventListener("click", (event) => {
+  if (elements.imagePrompt.value.trim()) return;
+  event.preventDefault();
+  elements.statusLine.textContent = "Build the image prompt first, then open it in ChatGPT.";
 });
 elements.imageRatio.addEventListener("change", markImagePromptStale);
 elements.imageStyle.addEventListener("change", markImagePromptStale);
