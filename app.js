@@ -1009,8 +1009,8 @@ function buildImagePrompt() {
 
   elements.imagePrompt.value = prompt;
   elements.imagePrompt.scrollTop = 0;
-  elements.openImageAI.href = `https://chatgpt.com/?q=${encodeURIComponent(prompt)}`;
-  elements.statusLine.textContent = "Image prompt built. Copy it into your preferred AI image generator.";
+  elements.openImageAI.href = "https://chatgpt.com/";
+  elements.statusLine.textContent = "Image prompt built. Use Copy + open ChatGPT, then paste the prompt there.";
   elements.promptState.textContent = `Built ${buildId.slice(-4)}`;
   elements.promptState.classList.remove("stale");
   return prompt;
@@ -1295,8 +1295,19 @@ elements.copyImagePrompt.addEventListener("click", async () => {
   }
   await copyTweetText(prompt, elements.copyImagePrompt);
 });
-elements.openImageAI.addEventListener("click", (event) => {
-  if (elements.imagePrompt.value.trim()) return;
+elements.openImageAI.addEventListener("click", async (event) => {
+  const prompt = elements.imagePrompt.value.trim();
+  if (prompt) {
+    try {
+      await navigator.clipboard.writeText(prompt);
+      elements.statusLine.textContent = "Prompt copied. ChatGPT is opening; paste it there.";
+      showCopyFeedback(elements.openImageAI);
+    } catch {
+      elements.statusLine.textContent = "ChatGPT is opening. If the prompt was not copied, use Copy prompt first.";
+    }
+    return;
+  }
+
   event.preventDefault();
   elements.statusLine.textContent = "Build the image prompt first, then open it in ChatGPT.";
 });
