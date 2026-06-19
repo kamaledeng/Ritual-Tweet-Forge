@@ -76,6 +76,149 @@ const quickAngles = [
   "Make it feel early but not overhyped"
 ];
 
+const keywordFocus = {
+  none: {
+    label: "No keyword focus",
+    phrase: "",
+    lines: [""]
+  },
+  "verifiable-compute": {
+    label: "Verifiable compute",
+    phrase: "verifiable compute",
+    lines: [
+      "verifiable compute matters when AI starts touching real app workflows",
+      "the more useful AI gets, the more I care about proving what actually happened",
+      "AI outputs are easier to trust when the compute path is not just hidden behind a black box"
+    ]
+  },
+  "onchain-agents": {
+    label: "Onchain agents",
+    phrase: "onchain agents",
+    lines: [
+      "onchain agents get interesting when they can act, remember, and leave a record",
+      "agents feel more real when their actions connect to smart contract flows",
+      "the useful version of agents is not just chat, it is action with context"
+    ]
+  },
+  "autonomous-agents": {
+    label: "Autonomous agents",
+    phrase: "autonomous agents",
+    lines: [
+      "autonomous agents need rails for action, memory, and accountability",
+      "the agent story gets stronger when the app can show what the agent actually did",
+      "autonomy is more useful when it lives inside a real product loop"
+    ]
+  },
+  "ritual-chain": {
+    label: "Ritual Chain",
+    phrase: "Ritual Chain",
+    lines: [
+      "Ritual Chain feels interesting because it treats AI as part of the app path",
+      "Ritual Chain makes more sense to me when I think about apps, not just infra",
+      "the Ritual Chain angle is about making AI-native apps feel normal to use"
+    ]
+  },
+  "ai-crypto": {
+    label: "AI x crypto",
+    phrase: "AI x crypto",
+    lines: [
+      "AI x crypto gets better when it produces useful interactions, not just narratives",
+      "the AI x crypto apps that win will probably feel simple first and technical second",
+      "AI x crypto needs more examples where users can feel the difference"
+    ]
+  },
+  "testnet-activity": {
+    label: "Testnet activity",
+    phrase: "testnet activity",
+    lines: [
+      "testnet activity is better when the click teaches you something",
+      "the best testnet apps give people a reason to come back beyond a checklist",
+      "testnet activity feels stronger when it creates a small proof of exploration"
+    ]
+  },
+  "smart-contracts": {
+    label: "Smart contracts",
+    phrase: "smart contracts",
+    lines: [
+      "smart contracts get more interesting when they can connect to useful AI workflows",
+      "the next step is making smart contracts feel less static and more responsive",
+      "smart contracts plus AI only matters if the user experience becomes better"
+    ]
+  },
+  "async-execution": {
+    label: "Async execution",
+    phrase: "async execution",
+    lines: [
+      "async execution is one of those ideas that sounds technical until an app makes it obvious",
+      "AI workflows do not always fit neatly inside one instant transaction",
+      "async execution can make heavier AI tasks feel more natural inside onchain apps"
+    ]
+  },
+  "validators-executors": {
+    label: "Validators / executors",
+    phrase: "validators and executors",
+    lines: [
+      "validators and executors are easier to understand when an app shows the flow clearly",
+      "the validator to executor path matters because AI work needs a visible process",
+      "I like when infrastructure terms become something users can actually see in an app"
+    ]
+  },
+  "builder-ecosystem": {
+    label: "Builder ecosystem",
+    phrase: "builder ecosystem",
+    lines: [
+      "a builder ecosystem gets stronger when small experiments explain the big idea",
+      "builders will make Ritual easier to understand by shipping tiny useful apps",
+      "the app layer is where the builder ecosystem can make the infra feel real"
+    ]
+  },
+  "community-experiments": {
+    label: "Community experiments",
+    phrase: "community experiments",
+    lines: [
+      "community experiments are underrated because they turn abstract infra into habits",
+      "small community apps can explain Ritual faster than another long thread",
+      "community experiments make a testnet feel alive instead of empty"
+    ]
+  },
+  "ai-native-apps": {
+    label: "AI-native apps",
+    phrase: "AI-native apps",
+    lines: [
+      "AI-native apps should feel like better products, not just normal apps with a prompt box",
+      "the exciting part is when AI becomes part of the workflow instead of a side feature",
+      "AI-native apps need action, state, and feedback loops to feel genuinely new"
+    ]
+  },
+  inference: {
+    label: "Inference",
+    phrase: "inference",
+    lines: [
+      "inference gets more interesting when apps can use it as part of real execution",
+      "AI inference is not enough by itself, the product loop around it matters",
+      "the useful question is how inference becomes something users can trust inside apps"
+    ]
+  },
+  "agent-coordination": {
+    label: "Agent coordination",
+    phrase: "agent coordination",
+    lines: [
+      "agent coordination gets interesting when multiple systems can work with shared context",
+      "multi-agent apps need better ways to show who did what and why",
+      "coordination is where agents start feeling like a network, not just isolated bots"
+    ]
+  },
+  "private-ai": {
+    label: "Private AI",
+    phrase: "private AI",
+    lines: [
+      "private AI matters if agents are ever going to touch sensitive workflows",
+      "AI apps need better boundaries around secrets, permissions, and user trust",
+      "privacy is not a bonus feature when AI starts acting inside real products"
+    ]
+  }
+};
+
 const hooks = [
   "hot take",
   "my honest take",
@@ -195,6 +338,8 @@ const elements = {
   ctaSelect: document.querySelector("#ctaSelect"),
   mentionSelect: document.querySelector("#mentionSelect"),
   hookSelect: document.querySelector("#hookSelect"),
+  keywordSelect: document.querySelector("#keywordSelect"),
+  keywordStyleSelect: document.querySelector("#keywordStyleSelect"),
   angleInput: document.querySelector("#angleInput"),
   presetRow: document.querySelector("#presetRow"),
   switchRitual: document.querySelector("#switchRitual"),
@@ -414,6 +559,45 @@ function getCta(ctaStyle) {
   return pick(["just my take", "that is the part I find interesting", "still early, but worth watching"]);
 }
 
+function getKeywordInsert(keywordKey, keywordStyle, index) {
+  const keyword = keywordFocus[keywordKey] || keywordFocus.none;
+  if (!keyword.phrase) return "";
+
+  if (keywordStyle === "direct") {
+    return pick(keyword.lines);
+  }
+
+  if (keywordStyle === "question") {
+    return pick([
+      `the question I keep asking: how does ${keyword.phrase} become something normal users can feel?`,
+      `what changes when ${keyword.phrase} moves from docs into real app behavior?`,
+      `where does ${keyword.phrase} show up first: infra, apps, or community tools?`
+    ]);
+  }
+
+  if (keywordStyle === "subtle") {
+    return pick([
+      keyword.lines[index % keyword.lines.length],
+      `this is where ${keyword.phrase} quietly becomes part of the product story`,
+      `I think ${keyword.phrase} is easier to understand through small apps than big claims`
+    ]);
+  }
+
+  return pick([
+    keyword.lines[index % keyword.lines.length],
+    `the ${keyword.phrase} angle is what makes this more interesting to me`,
+    `I keep coming back to ${keyword.phrase} because it gives the idea a real product direction`
+  ]);
+}
+
+function addKeywordLine(text, keywordLine, index) {
+  if (!keywordLine) return text;
+  const parts = text.split("\n\n");
+  const position = Math.min(parts.length - 1, 1 + (index % 2));
+  parts.splice(position, 0, keywordLine);
+  return parts.join("\n\n");
+}
+
 function buildTweet(topic, structure, tone, angle, index) {
   const data = topics[topic];
   const noun = pick(data.nouns);
@@ -425,12 +609,13 @@ function buildTweet(topic, structure, tone, angle, index) {
   const cta = getCta(elements.ctaSelect.value);
   const audienceLine = pick(audienceLines[audience] || audienceLines.community);
   const mentionStyle = elements.mentionSelect.value;
+  const keywordLine = getKeywordInsert(elements.keywordSelect.value, elements.keywordStyleSelect.value, index);
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
   const ending = pick(endings);
   const close = cta ? `\n\n${cta}\n\n${ending}` : `\n\n${ending}`;
 
   if (structure === "thread" || tone === "thread" || length === "thread") {
-    return injectMentions([
+    return injectMentions(addKeywordLine([
       pick(threadOpeners),
       "",
       `1/ ${hook}. ${claim}.`,
@@ -438,63 +623,63 @@ function buildTweet(topic, structure, tone, angle, index) {
       `2/ For ${noun}, the key is not just intelligence. It is execution, memory, and visible state.`,
       "",
       `3/ ${audienceLine}. ${bridge}${close}`,
-    ].join("\n"), mentionStyle, index);
+    ].join("\n"), keywordLine, index), mentionStyle, index);
   }
 
   let output = "";
 
   if (structure === "problem") {
     output = `${hook}:\n\nAI x crypto needs apps that feel useful, not just smart.\n\nRitual is interesting to me because ${claim}.\n\n${audienceLine}${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (structure === "contrast") {
     output = `${hook}:\n\nAI as a side feature is not that exciting to me.\n\nAI that can actually become part of the app flow is different.\n\nthat is why I keep coming back to ${noun} on Ritual${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (structure === "fact") {
     output = `${hook}:\n\nRitual is not interesting to me because it has AI branding.\n\nit is interesting because ${claim}.\n\n${bridge}${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (structure === "story") {
     output = `${hook}:\n\nimagine using an app where the agent does the work, leaves a record, and keeps getting better over time\n\nthat is the Ritual idea I keep thinking about: ${claim}.${personalAngle}${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (structure === "question") {
     output = `${hook}:\n\nwhat should apps look like when ${claim}?\n\nmy guess: the best Ritual apps will make ${noun} feel simple, not technical${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (structure === "builder") {
     output = `${hook}:\n\nif I were building around ${noun}, I would not lead with the infra\n\nI would lead with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (structure === "myth") {
     output = `${hook}:\n\nI do not see Ritual as just another AI narrative play.\n\nwhat makes it interesting is the chance to build apps where ${claim}.\n\nthat feels like a bigger design space for ${noun}${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (tone === "hype") {
     output = `${hook}\n\n${noun} make Ritual feel like more than another chain because ${claim}. ${bridge}${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (tone === "builder") {
     output = `if you are building around ${noun}, start from the user outcome first\n\nthen use Ritual for proof, memory, or action\n\n${bridge}${personalAngle}${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   if (tone === "curious") {
     output = `what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible${close}`;
-    return injectMentions(formatByLength(output, length), mentionStyle, index);
+    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
   }
 
   output = `${hook}:\n\n${claim}.\n\nthat is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}${close}`;
-  return injectMentions(formatByLength(output, length), mentionStyle, index);
+  return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
 }
 
 function generateDrafts(txHash = "") {
@@ -502,6 +687,8 @@ function generateDrafts(txHash = "") {
   const structure = elements.structureSelect.value;
   const tone = elements.toneSelect.value;
   const angle = elements.angleInput.value.trim();
+  const keywordKey = elements.keywordSelect.value;
+  const keywordLabel = keywordFocus[keywordKey]?.label || "No keyword focus";
   const seed = buildSeed();
   const drafts = Array.from({ length: 5 }, (_, index) => ({
     id: `${seed}-${index}`,
@@ -509,6 +696,7 @@ function generateDrafts(txHash = "") {
     topic,
     structure,
     tone,
+    keyword: keywordLabel,
     txHash,
     text: buildTweet(topic, structure, tone, angle, index),
     createdAt: new Date().toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -519,7 +707,9 @@ function generateDrafts(txHash = "") {
   selectDraft(drafts[0]);
   saveHistory(drafts);
   renderHistory();
-  elements.outputTitle.textContent = `${topic} / ${structure}`;
+  elements.outputTitle.textContent = keywordKey === "none"
+    ? `${topic} / ${structure}`
+    : `${topic} / ${keywordLabel}`;
   elements.variantMetric.textContent = String(drafts.length);
   elements.seedMetric.textContent = seed.slice(-5).toUpperCase();
   elements.statusLine.textContent = txHash
@@ -595,7 +785,7 @@ function renderHistory() {
           <small>${escapeHtml(draft.createdAt)} / ${escapeHtml(draft.topic)}</small>
           <strong>${escapeHtml(draft.text)}</strong>
         </div>
-        <p>${escapeHtml(draft.tone)} tone / seed ${escapeHtml(draft.seed.slice(-5).toUpperCase())}</p>
+        <p>${escapeHtml(draft.tone)} tone / ${escapeHtml(draft.keyword || "No keyword focus")} / seed ${escapeHtml(draft.seed.slice(-5).toUpperCase())}</p>
       </article>
     `).join("")
     : `<article class="empty-state"><strong>No tweets forged yet</strong><span>Your generated drafts will appear here.</span></article>`;
@@ -634,6 +824,8 @@ function buildGenerateMemo() {
     topic: elements.topicSelect.value,
     structure: elements.structureSelect.value,
     tone: elements.toneSelect.value,
+    keyword: elements.keywordSelect.value,
+    keywordStyle: elements.keywordStyleSelect.value,
     audience: elements.audienceSelect.value,
     length: elements.lengthSelect.value,
     cta: elements.ctaSelect.value,
