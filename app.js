@@ -226,6 +226,7 @@ const generationOptions = {
   lengths: ["short", "medium", "long", "thread"],
   ctas: ["soft", "watch", "builder", "question", "testnet", "none"],
   mentions: ["both", "net", "fnd"],
+  teamMentions: ["none", "all", "jez", "josh", "mad", "dunken", "flash"],
   hooks: ["opinion", "curiosity", "builder", "casual"],
   keywords: Object.keys(keywordFocus).filter((key) => key !== "auto"),
   keywordStyles: ["natural", "direct", "subtle", "question"]
@@ -310,7 +311,14 @@ const mentionMap = {
   fnd: "@ritualfnd"
 };
 
-const modMentions = "@Jez_Cryptoz @joshsimenhoff @0xMadScientist @dunken9718 @cryptooflashh";
+const teamMentionMap = {
+  all: "@Jez_Cryptoz @joshsimenhoff @0xMadScientist @dunken9718 @cryptooflashh",
+  jez: "@Jez_Cryptoz",
+  josh: "@joshsimenhoff",
+  mad: "@0xMadScientist",
+  dunken: "@dunken9718",
+  flash: "@cryptooflashh"
+};
 
 const audienceLines = {
   community: [
@@ -362,7 +370,7 @@ const elements = {
   lengthSelect: document.querySelector("#lengthSelect"),
   ctaSelect: document.querySelector("#ctaSelect"),
   mentionSelect: document.querySelector("#mentionSelect"),
-  modMentionSelect: document.querySelector("#modMentionSelect"),
+  teamMentionSelect: document.querySelector("#teamMentionSelect"),
   hookSelect: document.querySelector("#hookSelect"),
   keywordSelect: document.querySelector("#keywordSelect"),
   keywordStyleSelect: document.querySelector("#keywordStyleSelect"),
@@ -426,12 +434,12 @@ function resolveGenerationOptions() {
   const length = resolveChoice(elements.lengthSelect.value, generationOptions.lengths);
   const cta = resolveChoice(elements.ctaSelect.value, generationOptions.ctas);
   const mention = resolveChoice(elements.mentionSelect.value, generationOptions.mentions);
-  const modMentions = elements.modMentionSelect.value;
+  const teamMentions = resolveChoice(elements.teamMentionSelect.value, generationOptions.teamMentions);
   const hook = resolveChoice(elements.hookSelect.value, generationOptions.hooks);
   const keyword = resolveChoice(elements.keywordSelect.value, generationOptions.keywords);
   const keywordStyle = resolveChoice(elements.keywordStyleSelect.value, generationOptions.keywordStyles);
 
-  return { topic, structure, tone, audience, length, cta, mention, modMentions, hook, keyword, keywordStyle };
+  return { topic, structure, tone, audience, length, cta, mention, teamMentions, hook, keyword, keywordStyle };
 }
 
 function pickHook(style) {
@@ -541,11 +549,12 @@ function trimTweet(text) {
   return `${text.slice(0, 270).trim()}...`;
 }
 
-function appendModMentions(text, modMentionStyle) {
-  if (modMentionStyle !== "all") return text;
-  if (text.includes("@Jez_Cryptoz")) return text;
+function appendTeamMentions(text, teamMentionStyle) {
+  const teamMentions = teamMentionMap[teamMentionStyle] || "";
+  if (!teamMentions) return text;
+  if (text.includes(teamMentions.split(" ")[0])) return text;
 
-  const suffix = `\n\n${modMentions}`;
+  const suffix = `\n\n${teamMentions}`;
   const maxBaseLength = 275 - suffix.length;
   const base = text.length > maxBaseLength ? `${text.slice(0, maxBaseLength - 3).trim()}...` : text;
   return `${base}${suffix}`;
@@ -664,8 +673,8 @@ function buildTweet(topic, structure, tone, angle, index, settings) {
   const cta = getCta(settings.cta);
   const audienceLine = pick(audienceLines[audience] || audienceLines.community);
   const mentionStyle = settings.mention;
-  const modMentionStyle = settings.modMentions;
-  const finalizeTweet = (text) => appendModMentions(injectMentions(text, mentionStyle, index), modMentionStyle);
+  const teamMentionStyle = settings.teamMentions;
+  const finalizeTweet = (text) => appendTeamMentions(injectMentions(text, mentionStyle, index), teamMentionStyle);
   const keywordLine = getKeywordInsert(settings.keyword, settings.keywordStyle, index);
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
   const ending = pick(endings);
@@ -755,7 +764,7 @@ function generateDrafts(txHash = "") {
     structure,
     tone,
     keyword: keywordLabel,
-    modMentions: settings.modMentions,
+    teamMentions: settings.teamMentions,
     txHash,
     text: buildTweet(topic, structure, tone, angle, index, settings),
     createdAt: new Date().toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -889,7 +898,7 @@ function buildGenerateMemo() {
     length: elements.lengthSelect.value,
     cta: elements.ctaSelect.value,
     mention: elements.mentionSelect.value,
-    modMentions: elements.modMentionSelect.value,
+    teamMentions: elements.teamMentionSelect.value,
     hook: elements.hookSelect.value,
     createdAt: new Date().toISOString()
   });

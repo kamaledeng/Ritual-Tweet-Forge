@@ -14,7 +14,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Five unique drafts per generation
 - Required Ritual Testnet gas transaction before each generation
 - Required mentions for `@ritualnet` and `@ritualfnd`
-- Optional bottom-only mod mentions for `@Jez_Cryptoz`, `@joshsimenhoff`, `@0xMadScientist`, `@dunken9718`, and `@cryptooflashh`
+- Optional bottom-only team mentions for `@Jez_Cryptoz`, `@joshsimenhoff`, `@0xMadScientist`, `@dunken9718`, and `@cryptooflashh`
 - Casual human-sounding outputs with no visible structure labels
 - Mixed hook styles, natural endings, and mentions that can appear mid-tweet or at the end
 - Copy feedback with button state, card flash, and toast confirmation
