@@ -1009,7 +1009,7 @@ function buildImagePrompt() {
 
   elements.imagePrompt.value = prompt;
   elements.imagePrompt.scrollTop = 0;
-  elements.statusLine.textContent = "Image prompt built. Use Copy + open ChatGPT, then paste the prompt there.";
+  elements.statusLine.textContent = "Image prompt built. Copy it, then open ChatGPT or your preferred image AI.";
   elements.promptState.textContent = `Built ${buildId.slice(-4)}`;
   elements.promptState.classList.remove("stale");
   return prompt;
@@ -1293,7 +1293,7 @@ elements.copyImagePrompt.addEventListener("click", async () => {
   }
   await copyTweetText(prompt, elements.copyImagePrompt);
 });
-elements.openImageAI.addEventListener("click", async () => {
+elements.openImageAI.addEventListener("click", () => {
   const prompt = elements.imagePrompt.value.trim();
   if (!prompt) {
     elements.statusLine.textContent = "Build the image prompt first, then open it in ChatGPT.";
@@ -1301,17 +1301,9 @@ elements.openImageAI.addEventListener("click", async () => {
   }
 
   const chatWindow = window.open("https://chatgpt.com/", "_blank", "noopener,noreferrer");
-  try {
-    await navigator.clipboard.writeText(prompt);
-    elements.statusLine.textContent = chatWindow
-      ? "Prompt copied. ChatGPT is opening; paste it there."
-      : "Prompt copied. If ChatGPT did not open, allow popups and try again.";
-    showCopyFeedback(elements.openImageAI);
-  } catch {
-    elements.statusLine.textContent = chatWindow
-      ? "ChatGPT is opening. If the prompt was not copied, use Copy prompt first."
-      : "Could not open ChatGPT. Use Copy prompt, then open ChatGPT manually.";
-  }
+  elements.statusLine.textContent = chatWindow
+    ? "ChatGPT is opening. Use Copy prompt, then paste it there."
+    : "Could not open ChatGPT. Allow popups or open ChatGPT manually.";
 });
 elements.imageRatio.addEventListener("change", markImagePromptStale);
 elements.imageStyle.addEventListener("change", markImagePromptStale);
