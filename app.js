@@ -219,6 +219,29 @@ const keywordFocus = {
   }
 };
 
+const generationOptions = {
+  structures: ["problem", "contrast", "fact", "story", "question", "builder", "myth", "thread"],
+  tones: ["clear", "hype", "builder", "curious", "thread"],
+  audiences: ["community", "builders", "newcomers", "airdrop", "researchers", "friends"],
+  lengths: ["short", "medium", "long", "thread"],
+  ctas: ["soft", "watch", "builder", "question", "testnet", "none"],
+  mentions: ["both", "net", "fnd"],
+  hooks: ["opinion", "curiosity", "builder", "casual"],
+  keywords: Object.keys(keywordFocus).filter((key) => key !== "auto"),
+  keywordStyles: ["natural", "direct", "subtle", "question"]
+};
+
+const structureLabels = {
+  problem: "Problem First",
+  contrast: "Comparison / Contrast",
+  fact: "Fact Lead",
+  story: "Narrative",
+  question: "Question Hook",
+  builder: "Builder Insight",
+  myth: "Myth vs Reality",
+  thread: "Mini Thread"
+};
+
 const hooks = [
   "hot take",
   "my honest take",
@@ -388,8 +411,26 @@ function pick(items) {
   return items[randomInt(items.length)];
 }
 
-function pickHook() {
-  const style = elements.hookSelect.value;
+function resolveChoice(value, choices) {
+  return value === "auto" ? pick(choices) : value;
+}
+
+function resolveGenerationOptions() {
+  const topic = resolveChoice(elements.topicSelect.value, Object.keys(topics));
+  const structure = resolveChoice(elements.structureSelect.value, generationOptions.structures);
+  const tone = resolveChoice(elements.toneSelect.value, generationOptions.tones);
+  const audience = resolveChoice(elements.audienceSelect.value, generationOptions.audiences);
+  const length = resolveChoice(elements.lengthSelect.value, generationOptions.lengths);
+  const cta = resolveChoice(elements.ctaSelect.value, generationOptions.ctas);
+  const mention = resolveChoice(elements.mentionSelect.value, generationOptions.mentions);
+  const hook = resolveChoice(elements.hookSelect.value, generationOptions.hooks);
+  const keyword = resolveChoice(elements.keywordSelect.value, generationOptions.keywords);
+  const keywordStyle = resolveChoice(elements.keywordStyleSelect.value, generationOptions.keywordStyles);
+
+  return { topic, structure, tone, audience, length, cta, mention, hook, keyword, keywordStyle };
+}
+
+function pickHook(style) {
   if (style === "curiosity") return pick(questionHooks);
   if (style === "casual") return pick(openerHooks);
   if (randomInt(4) === 0) return pick(questionHooks);
@@ -598,18 +639,18 @@ function addKeywordLine(text, keywordLine, index) {
   return parts.join("\n\n");
 }
 
-function buildTweet(topic, structure, tone, angle, index) {
+function buildTweet(topic, structure, tone, angle, index, settings) {
   const data = topics[topic];
   const noun = pick(data.nouns);
   const claim = pick(data.claims);
-  const hook = pickHook();
+  const hook = pickHook(settings.hook);
   const bridge = pick(bridges);
-  const audience = elements.audienceSelect.value;
-  const length = elements.lengthSelect.value;
-  const cta = getCta(elements.ctaSelect.value);
+  const audience = settings.audience;
+  const length = settings.length;
+  const cta = getCta(settings.cta);
   const audienceLine = pick(audienceLines[audience] || audienceLines.community);
-  const mentionStyle = elements.mentionSelect.value;
-  const keywordLine = getKeywordInsert(elements.keywordSelect.value, elements.keywordStyleSelect.value, index);
+  const mentionStyle = settings.mention;
+  const keywordLine = getKeywordInsert(settings.keyword, settings.keywordStyle, index);
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
   const ending = pick(endings);
   const close = cta ? `\n\n${cta}\n\n${ending}` : `\n\n${ending}`;
@@ -683,11 +724,12 @@ function buildTweet(topic, structure, tone, angle, index) {
 }
 
 function generateDrafts(txHash = "") {
-  const topic = elements.topicSelect.value;
-  const structure = elements.structureSelect.value;
-  const tone = elements.toneSelect.value;
+  const settings = resolveGenerationOptions();
+  const topic = settings.topic;
+  const structure = settings.structure;
+  const tone = settings.tone;
   const angle = elements.angleInput.value.trim();
-  const keywordKey = elements.keywordSelect.value;
+  const keywordKey = settings.keyword;
   const keywordLabel = keywordFocus[keywordKey]?.label || "No keyword focus";
   const seed = buildSeed();
   const drafts = Array.from({ length: 5 }, (_, index) => ({
@@ -698,7 +740,7 @@ function generateDrafts(txHash = "") {
     tone,
     keyword: keywordLabel,
     txHash,
-    text: buildTweet(topic, structure, tone, angle, index),
+    text: buildTweet(topic, structure, tone, angle, index, settings),
     createdAt: new Date().toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
   }));
 
@@ -708,7 +750,7 @@ function generateDrafts(txHash = "") {
   saveHistory(drafts);
   renderHistory();
   elements.outputTitle.textContent = keywordKey === "none"
-    ? `${topic} / ${structure}`
+    ? `${topic} / ${structureLabels[structure] || structure}`
     : `${topic} / ${keywordLabel}`;
   elements.variantMetric.textContent = String(drafts.length);
   elements.seedMetric.textContent = seed.slice(-5).toUpperCase();
