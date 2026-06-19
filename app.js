@@ -901,57 +901,6 @@ async function copySelectedTweet() {
   await copyTweetText(selectedDraft.text, elements.copyTweet);
 }
 
-function stringToHex(value) {
-  const bytes = new TextEncoder().encode(value);
-  return `0x${[...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("")}`;
-}
-
-function buildAnchorMemo(draft) {
-  return JSON.stringify({
-    app: "Ritual Tweet Forge",
-    id: draft.id,
-    topic: draft.topic,
-    tone: draft.tone,
-    seed: draft.seed,
-    preview: draft.text.slice(0, 160),
-    createdAt: draft.createdAt
-  });
-}
-
-function buildGenerateMemo() {
-  return JSON.stringify({
-    app: "Ritual Tweet Forge",
-    action: "generate",
-    topic: elements.topicSelect.value,
-    structure: elements.structureSelect.value,
-    tone: elements.toneSelect.value,
-    keyword: elements.keywordSelect.value,
-    keywordStyle: elements.keywordStyleSelect.value,
-    audience: elements.audienceSelect.value,
-    length: elements.lengthSelect.value,
-    cta: elements.ctaSelect.value,
-    mention: elements.mentionSelect.value,
-    teamMentions: elements.teamMentionSelect.value,
-    hook: elements.hookSelect.value,
-    uniqueness: elements.uniquenessSelect.value,
-    createdAt: new Date().toISOString()
-  });
-}
-
-function buildImagePromptMemo() {
-  return JSON.stringify({
-    app: "Ritual Tweet Forge",
-    action: "build-image-prompt",
-    draftId: selectedDraft?.id || "",
-    topic: selectedDraft?.topic || elements.topicSelect.value,
-    ratio: elements.imageRatio.value,
-    style: elements.imageStyle.value,
-    scene: elements.imageScene.value,
-    mode: elements.imagePromptMode.value,
-    createdAt: new Date().toISOString()
-  });
-}
-
 function selectedOptionLabel(select) {
   return select.selectedOptions[0]?.textContent.trim() || select.value;
 }
@@ -1126,8 +1075,7 @@ async function payGenerationFee() {
     params: [{
       from: walletAddress,
       to: walletAddress,
-      value: "0x0",
-      data: stringToHex(buildGenerateMemo())
+      value: "0x0"
     }]
   });
 }
@@ -1151,8 +1099,7 @@ async function payImagePromptFee() {
     params: [{
       from: walletAddress,
       to: walletAddress,
-      value: "0x0",
-      data: stringToHex(buildImagePromptMemo())
+      value: "0x0"
     }]
   });
 }
@@ -1201,8 +1148,7 @@ async function anchorSelectedDraft() {
       params: [{
         from: walletAddress,
         to: walletAddress,
-        value: "0x0",
-        data: stringToHex(buildAnchorMemo(selectedDraft))
+        value: "0x0"
       }]
     });
 

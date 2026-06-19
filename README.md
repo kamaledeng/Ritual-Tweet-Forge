@@ -13,7 +13,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Keyword style control for natural, direct, subtle, or question-based keyword usage
 - Content structures: Problem First, Comparison / Contrast, Fact Lead, Narrative, Question Hook, Builder Insight, Myth vs Reality, and Mini Thread
 - Five unique drafts per generation
-- Required Ritual Testnet gas transaction before each generation
+- Required MetaMask-compatible 0 RITUAL self-transaction before each generation
 - Required mentions for `@ritualnet` and `@ritualfnd`
 - Optional bottom-only team mentions for `@Jez_Cryptoz`, `@joshsimenhoff`, `@0xMadScientist`, `@dunken9718`, and `@cryptooflashh`
 - Casual human-sounding outputs with no visible structure labels
@@ -21,7 +21,7 @@ Premium static web app for generating unique Ritual tweet drafts and saving sele
 - Copy feedback with button state, card flash, and toast confirmation
 - Copy-to-clipboard buttons and X share flow
 - Advanced AI image prompt builder with ratio, style, scene, and prompt mode controls
-- Required Ritual Testnet gas transaction before each image prompt build
+- Required MetaMask-compatible 0 RITUAL self-transaction before each image prompt build
 - Prompt state indicator when image settings or selected tweet need a rebuild
 - Ratio options: 1:1, 16:9, 4:5, 9:16, and 3:2
 - Copyable image prompts based on the selected tweet, topic, seed, and tx hash
