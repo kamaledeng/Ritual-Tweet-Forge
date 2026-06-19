@@ -310,6 +310,8 @@ const mentionMap = {
   fnd: "@ritualfnd"
 };
 
+const modMentions = "@Jez_Cryptoz @joshsimenhoff @0xMadScientist @dunken9718 @cryptooflashh";
+
 const audienceLines = {
   community: [
     "the community angle is what makes this fun to watch",
@@ -360,6 +362,7 @@ const elements = {
   lengthSelect: document.querySelector("#lengthSelect"),
   ctaSelect: document.querySelector("#ctaSelect"),
   mentionSelect: document.querySelector("#mentionSelect"),
+  modMentionSelect: document.querySelector("#modMentionSelect"),
   hookSelect: document.querySelector("#hookSelect"),
   keywordSelect: document.querySelector("#keywordSelect"),
   keywordStyleSelect: document.querySelector("#keywordStyleSelect"),
@@ -423,11 +426,12 @@ function resolveGenerationOptions() {
   const length = resolveChoice(elements.lengthSelect.value, generationOptions.lengths);
   const cta = resolveChoice(elements.ctaSelect.value, generationOptions.ctas);
   const mention = resolveChoice(elements.mentionSelect.value, generationOptions.mentions);
+  const modMentions = elements.modMentionSelect.value;
   const hook = resolveChoice(elements.hookSelect.value, generationOptions.hooks);
   const keyword = resolveChoice(elements.keywordSelect.value, generationOptions.keywords);
   const keywordStyle = resolveChoice(elements.keywordStyleSelect.value, generationOptions.keywordStyles);
 
-  return { topic, structure, tone, audience, length, cta, mention, hook, keyword, keywordStyle };
+  return { topic, structure, tone, audience, length, cta, mention, modMentions, hook, keyword, keywordStyle };
 }
 
 function pickHook(style) {
@@ -535,6 +539,16 @@ function buildSeed() {
 function trimTweet(text) {
   if (text.length <= 275) return text;
   return `${text.slice(0, 270).trim()}...`;
+}
+
+function appendModMentions(text, modMentionStyle) {
+  if (modMentionStyle !== "all") return text;
+  if (text.includes("@Jez_Cryptoz")) return text;
+
+  const suffix = `\n\n${modMentions}`;
+  const maxBaseLength = 275 - suffix.length;
+  const base = text.length > maxBaseLength ? `${text.slice(0, maxBaseLength - 3).trim()}...` : text;
+  return `${base}${suffix}`;
 }
 
 function getMentions(mentionStyle, index) {
@@ -650,13 +664,15 @@ function buildTweet(topic, structure, tone, angle, index, settings) {
   const cta = getCta(settings.cta);
   const audienceLine = pick(audienceLines[audience] || audienceLines.community);
   const mentionStyle = settings.mention;
+  const modMentionStyle = settings.modMentions;
+  const finalizeTweet = (text) => appendModMentions(injectMentions(text, mentionStyle, index), modMentionStyle);
   const keywordLine = getKeywordInsert(settings.keyword, settings.keywordStyle, index);
   const personalAngle = angle ? `\n\nMy angle: ${angle}` : "";
   const ending = pick(endings);
   const close = cta ? `\n\n${cta}\n\n${ending}` : `\n\n${ending}`;
 
   if (structure === "thread" || tone === "thread" || length === "thread") {
-    return injectMentions(addKeywordLine([
+    return finalizeTweet(addKeywordLine([
       pick(threadOpeners),
       "",
       `1/ ${hook}. ${claim}.`,
@@ -664,63 +680,63 @@ function buildTweet(topic, structure, tone, angle, index, settings) {
       `2/ For ${noun}, the key is not just intelligence. It is execution, memory, and visible state.`,
       "",
       `3/ ${audienceLine}. ${bridge}${close}`,
-    ].join("\n"), keywordLine, index), mentionStyle, index);
+    ].join("\n"), keywordLine, index));
   }
 
   let output = "";
 
   if (structure === "problem") {
     output = `${hook}:\n\nAI x crypto needs apps that feel useful, not just smart.\n\nRitual is interesting to me because ${claim}.\n\n${audienceLine}${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (structure === "contrast") {
     output = `${hook}:\n\nAI as a side feature is not that exciting to me.\n\nAI that can actually become part of the app flow is different.\n\nthat is why I keep coming back to ${noun} on Ritual${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (structure === "fact") {
     output = `${hook}:\n\nRitual is not interesting to me because it has AI branding.\n\nit is interesting because ${claim}.\n\n${bridge}${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (structure === "story") {
     output = `${hook}:\n\nimagine using an app where the agent does the work, leaves a record, and keeps getting better over time\n\nthat is the Ritual idea I keep thinking about: ${claim}.${personalAngle}${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (structure === "question") {
     output = `${hook}:\n\nwhat should apps look like when ${claim}?\n\nmy guess: the best Ritual apps will make ${noun} feel simple, not technical${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (structure === "builder") {
     output = `${hook}:\n\nif I were building around ${noun}, I would not lead with the infra\n\nI would lead with the user outcome, then use Ritual for proof, memory, or action\n\n${bridge}${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (structure === "myth") {
     output = `${hook}:\n\nI do not see Ritual as just another AI narrative play.\n\nwhat makes it interesting is the chance to build apps where ${claim}.\n\nthat feels like a bigger design space for ${noun}${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (tone === "hype") {
     output = `${hook}\n\n${noun} make Ritual feel like more than another chain because ${claim}. ${bridge}${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (tone === "builder") {
     output = `if you are building around ${noun}, start from the user outcome first\n\nthen use Ritual for proof, memory, or action\n\n${bridge}${personalAngle}${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   if (tone === "curious") {
     output = `what would you build if ${claim}?\n\nI think the answer starts with ${noun}, but the winning apps will make the infrastructure feel invisible${close}`;
-    return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+    return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
   }
 
   output = `${hook}:\n\n${claim}.\n\nthat is why ${noun} are worth paying attention to in the Ritual ecosystem.\n\n${bridge}${close}`;
-  return injectMentions(formatByLength(addKeywordLine(output, keywordLine, index), length), mentionStyle, index);
+  return finalizeTweet(formatByLength(addKeywordLine(output, keywordLine, index), length));
 }
 
 function generateDrafts(txHash = "") {
@@ -739,6 +755,7 @@ function generateDrafts(txHash = "") {
     structure,
     tone,
     keyword: keywordLabel,
+    modMentions: settings.modMentions,
     txHash,
     text: buildTweet(topic, structure, tone, angle, index, settings),
     createdAt: new Date().toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -872,6 +889,7 @@ function buildGenerateMemo() {
     length: elements.lengthSelect.value,
     cta: elements.ctaSelect.value,
     mention: elements.mentionSelect.value,
+    modMentions: elements.modMentionSelect.value,
     hook: elements.hookSelect.value,
     createdAt: new Date().toISOString()
   });
