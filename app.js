@@ -1,3 +1,5 @@
+import { clearWalletSession } from "./wallet-session.js";
+
 const ritualChain = {
   chainId: "0x7BB",
   chainName: "Ritual Testnet",
@@ -405,6 +407,8 @@ const elements = {
   charMetric: document.querySelector("#charMetric"),
   connectWallet: document.querySelector("#connectWallet"),
   walletLabel: document.querySelector("#walletLabel"),
+  walletMenu: document.querySelector("#walletMenu"),
+  disconnectWallet: document.querySelector("#disconnectWallet"),
   walletModal: document.querySelector("#walletModal"),
   walletList: document.querySelector("#walletList"),
   closeWalletModal: document.querySelector("#closeWalletModal"),
@@ -557,12 +561,51 @@ function closeWalletModal() {
   elements.walletModal.setAttribute("aria-hidden", "true");
 }
 
+function closeWalletMenu({ restoreFocus = false } = {}) {
+  elements.walletMenu.hidden = true;
+  elements.connectWallet.setAttribute("aria-expanded", "false");
+  if (restoreFocus) elements.connectWallet.focus();
+}
+
+function toggleWalletMenu() {
+  const willOpen = elements.walletMenu.hidden;
+  elements.walletMenu.hidden = !willOpen;
+  elements.connectWallet.setAttribute("aria-expanded", String(willOpen));
+  if (willOpen) elements.disconnectWallet.focus();
+}
+
+function disconnectWalletSession() {
+  const cleared = clearWalletSession({
+    walletAddress,
+    selectedProvider,
+    selectedWalletName
+  });
+
+  walletAddress = cleared.walletAddress;
+  selectedProvider = cleared.selectedProvider;
+  selectedWalletName = cleared.selectedWalletName;
+  elements.connectWallet.classList.remove("connected");
+  elements.connectWallet.setAttribute("aria-haspopup", "dialog");
+  elements.walletLabel.textContent = "Connect wallet";
+  elements.networkStatus.textContent = "No wallet";
+  elements.statusLine.textContent = "Wallet disconnected from Ritual Tweet Forge.";
+  closeWalletMenu({ restoreFocus: true });
+  renderWalletList();
+}
+
 function attachProviderListeners(provider) {
   provider.on?.("chainChanged", refreshNetwork);
   provider.on?.("accountsChanged", (accounts) => {
+    if (provider !== selectedProvider) return;
     walletAddress = accounts[0] || "";
     elements.connectWallet.classList.toggle("connected", Boolean(walletAddress));
     elements.walletLabel.textContent = walletAddress ? shortAddress(walletAddress) : "Connect wallet";
+    if (!walletAddress) {
+      selectedProvider = null;
+      selectedWalletName = "";
+      elements.networkStatus.textContent = "No wallet";
+      closeWalletMenu();
+    }
   });
 }
 
@@ -1003,6 +1046,8 @@ async function connectWallet() {
   if (!walletAddress) return;
 
   elements.connectWallet.classList.add("connected");
+  elements.connectWallet.setAttribute("aria-haspopup", "menu");
+  elements.connectWallet.setAttribute("aria-expanded", "false");
   elements.walletLabel.textContent = shortAddress(walletAddress);
   elements.statusLine.textContent = `${selectedWalletName || walletIdentity(provider)} connected. You can save drafts on Ritual Testnet.`;
   attachProviderListeners(provider);
@@ -1273,7 +1318,14 @@ elements.generateDemo.addEventListener("click", () => {
   elements.statusLine.textContent = "Angle randomized. Click generate and confirm the Ritual fee transaction.";
   document.querySelector("#forge").scrollIntoView({ behavior: "smooth", block: "start" });
 });
-elements.connectWallet.addEventListener("click", connectWallet);
+elements.connectWallet.addEventListener("click", () => {
+  if (walletAddress) {
+    toggleWalletMenu();
+    return;
+  }
+  connectWallet();
+});
+elements.disconnectWallet.addEventListener("click", disconnectWalletSession);
 elements.closeWalletModal.addEventListener("click", closeWalletModal);
 elements.walletModal.addEventListener("click", (event) => {
   if (event.target === elements.walletModal) closeWalletModal();
@@ -1293,6 +1345,18 @@ elements.switchRitual.addEventListener("click", async () => {
     await switchToRitual();
   } catch (error) {
     elements.statusLine.textContent = `Could not add or switch Ritual network. ${walletErrorMessage(error)}. ${ritualNetworkHelp}`;
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if (elements.walletMenu.hidden) return;
+  if (elements.walletMenu.contains(event.target) || elements.connectWallet.contains(event.target)) return;
+  closeWalletMenu();
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && !elements.walletMenu.hidden) {
+    closeWalletMenu({ restoreFocus: true });
   }
 });
 

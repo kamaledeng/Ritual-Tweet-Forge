@@ -32,10 +32,23 @@
         <a href="#history">History</a>
         <a href="https://docs.ritualfoundation.org/" target="_blank" rel="noreferrer">Docs</a>
       </nav>
-      <button class="wallet-button" id="connectWallet" type="button">
-        <span class="wallet-dot"></span>
-        <span id="walletLabel">Connect wallet</span>
-      </button>
+      <div class="wallet-control">
+        <button
+          class="wallet-button"
+          id="connectWallet"
+          type="button"
+          aria-haspopup="dialog"
+          aria-expanded="false"
+          aria-controls="walletMenu"
+        >
+          <span class="wallet-dot"></span>
+          <span id="walletLabel">Connect wallet</span>
+        </button>
+        <div class="wallet-menu" id="walletMenu" role="menu" hidden>
+          <button id="disconnectWallet" type="button" role="menuitem">Disconnect wallet</button>
+          <small>Ends this app session only</small>
+        </div>
+      </div>
     </header>
 
     <main>
@@ -428,6 +441,6 @@
       </span>
     </a>
 
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
   </body>
 </html>
