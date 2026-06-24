@@ -408,6 +408,7 @@ const elements = {
   connectWallet: document.querySelector("#connectWallet"),
   walletLabel: document.querySelector("#walletLabel"),
   walletMenu: document.querySelector("#walletMenu"),
+  walletMenuAddress: document.querySelector("#walletMenuAddress"),
   disconnectWallet: document.querySelector("#disconnectWallet"),
   walletModal: document.querySelector("#walletModal"),
   walletList: document.querySelector("#walletList"),
@@ -569,6 +570,7 @@ function closeWalletMenu({ restoreFocus = false } = {}) {
 
 function toggleWalletMenu() {
   const willOpen = elements.walletMenu.hidden;
+  if (willOpen && walletAddress) elements.walletMenuAddress.textContent = shortAddress(walletAddress);
   elements.walletMenu.hidden = !willOpen;
   elements.connectWallet.setAttribute("aria-expanded", String(willOpen));
   if (willOpen) elements.disconnectWallet.focus();
@@ -587,6 +589,7 @@ function disconnectWalletSession() {
   elements.connectWallet.classList.remove("connected");
   elements.connectWallet.setAttribute("aria-haspopup", "dialog");
   elements.walletLabel.textContent = "Connect wallet";
+  elements.walletMenuAddress.textContent = "Not connected";
   elements.networkStatus.textContent = "No wallet";
   elements.statusLine.textContent = "Wallet disconnected from Ritual Tweet Forge.";
   closeWalletMenu({ restoreFocus: true });
@@ -600,6 +603,7 @@ function attachProviderListeners(provider) {
     walletAddress = accounts[0] || "";
     elements.connectWallet.classList.toggle("connected", Boolean(walletAddress));
     elements.walletLabel.textContent = walletAddress ? shortAddress(walletAddress) : "Connect wallet";
+    elements.walletMenuAddress.textContent = walletAddress ? shortAddress(walletAddress) : "Not connected";
     if (!walletAddress) {
       selectedProvider = null;
       selectedWalletName = "";
@@ -1049,6 +1053,7 @@ async function connectWallet() {
   elements.connectWallet.setAttribute("aria-haspopup", "menu");
   elements.connectWallet.setAttribute("aria-expanded", "false");
   elements.walletLabel.textContent = shortAddress(walletAddress);
+  elements.walletMenuAddress.textContent = shortAddress(walletAddress);
   elements.statusLine.textContent = `${selectedWalletName || walletIdentity(provider)} connected. You can save drafts on Ritual Testnet.`;
   attachProviderListeners(provider);
   await refreshNetwork();

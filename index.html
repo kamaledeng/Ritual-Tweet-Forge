@@ -45,8 +45,16 @@
           <span id="walletLabel">Connect wallet</span>
         </button>
         <div class="wallet-menu" id="walletMenu" role="menu" hidden>
-          <button id="disconnectWallet" type="button" role="menuitem">Disconnect wallet</button>
-          <small>Ends this app session only</small>
+          <div class="wallet-menu-head">
+            <span>Connected wallet</span>
+            <strong id="walletMenuAddress">Not connected</strong>
+          </div>
+          <div class="wallet-menu-status">
+            <span></span>
+            <strong>Ritual session active</strong>
+          </div>
+          <button id="disconnectWallet" type="button" role="menuitem">Disconnect</button>
+          <small>Only disconnects this app, not your wallet extension</small>
         </div>
       </div>
     </header>
